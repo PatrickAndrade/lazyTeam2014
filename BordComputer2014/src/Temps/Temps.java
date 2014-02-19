@@ -27,9 +27,9 @@ public class Temps implements Runnable {
 		int nombre_sec_annee = nombre_sec_jour * 365;
 		
 		boolean end = false;
-	    while (secondsUntilNow > nombre_sec_annee && !end) {
+	    while (secondsUntilNow >= nombre_sec_annee && !end) {
 	        if (isLeapYear(annee)) {
-	            if (secondsUntilNow > nombre_sec_annee + nombre_sec_jour) {
+	            if (secondsUntilNow >= nombre_sec_annee + nombre_sec_jour) {
 	                secondsUntilNow -= (nombre_sec_annee + nombre_sec_jour);
 	                annee += 1;
 	            } else {
@@ -41,29 +41,28 @@ public class Temps implements Runnable {
 	        }
 	    }
 	    
-	    while (secondsUntilNow > (daysForMonth(annee, mois) * nombre_sec_jour)) {
+	    while (secondsUntilNow >= (daysForMonth(annee, mois) * nombre_sec_jour)) {
 			secondsUntilNow -= (daysForMonth(annee, mois) * nombre_sec_jour);
 			mois = Mois.values()[mois.ordinal() + 1];
 		}
-	    
-	    mois = Mois.values()[mois.ordinal() - 1];
-		
-		while (secondsUntilNow > nombre_sec_jour) {
+	    		
+		while (secondsUntilNow >= nombre_sec_jour) {
 			jours += 1;
 			secondsUntilNow -= nombre_sec_jour;
 		}
 		
-		while (secondsUntilNow > 3600) {
+		while (secondsUntilNow >= 3600) {
 			heures += 1;
 			secondsUntilNow -= 3600;
 		}
 		
-		while (secondsUntilNow > 60) {
+		while (secondsUntilNow >= 60) {
 			minutes += 1;
 			secondsUntilNow -= 60;
 		}
 		
 		secondes = (int) secondsUntilNow;
+		heures++; //On est a GMT + 1
 	}
 
 	private int daysForMonth(int annee, Mois mois) {
