@@ -1,14 +1,12 @@
 package Temps;
 
-import java.sql.Date;
-
 /**
  * TODO: Comment this class
  * 
  * @author Gregory Maitre & Patrick Andrade
  * 
  */
-public class Temps implements Runnable {
+public class Time {
 
 	enum Mois {
 		Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Septembre, Octobre, Novembre, Decembre
@@ -20,72 +18,85 @@ public class Temps implements Runnable {
 	private int heures = 0;
 	private int minutes = 0;
 	private int secondes = 0;
+
+	public Time(int annee, Mois mois, int jours, int heures, int minutes,
+			int secondes) {
+		this.annee = annee;
+		this.mois = mois;
+		this.jours = jours;
+		this.heures = heures;
+		this.minutes = minutes;
+		this.secondes = secondes;
+	}
 	
-	public Temps() {
+	public Time() {
+	}
+
+	public void now() {
 		long secondsUntilNow = System.currentTimeMillis() / 1000;
 		int nombre_sec_jour = 60 * 60 * 24;
 		int nombre_sec_annee = nombre_sec_jour * 365;
-		
+
 		boolean end = false;
-	    while (secondsUntilNow >= nombre_sec_annee && !end) {
-	        if (isLeapYear(annee)) {
-	            if (secondsUntilNow >= nombre_sec_annee + nombre_sec_jour) {
-	                secondsUntilNow -= (nombre_sec_annee + nombre_sec_jour);
-	                annee += 1;
-	            } else {
+		while (secondsUntilNow >= nombre_sec_annee && !end) {
+			if (isLeapYear(annee)) {
+				if (secondsUntilNow >= nombre_sec_annee + nombre_sec_jour) {
+					secondsUntilNow -= (nombre_sec_annee + nombre_sec_jour);
+					annee += 1;
+				} else {
 					end = true;
-	            }
-	        } else {
-	            secondsUntilNow -= nombre_sec_annee;
-	            annee += 1;
-	        }
-	    }
-	    
-	    while (secondsUntilNow >= (daysForMonth(annee, mois) * nombre_sec_jour)) {
+				}
+			} else {
+				secondsUntilNow -= nombre_sec_annee;
+				annee += 1;
+			}
+		}
+
+		while (secondsUntilNow >= (daysForMonth(annee, mois) * nombre_sec_jour)) {
 			secondsUntilNow -= (daysForMonth(annee, mois) * nombre_sec_jour);
 			mois = Mois.values()[mois.ordinal() + 1];
 		}
-	    		
+
 		while (secondsUntilNow >= nombre_sec_jour) {
 			jours += 1;
 			secondsUntilNow -= nombre_sec_jour;
 		}
-		
+
 		while (secondsUntilNow >= 3600) {
 			heures += 1;
 			secondsUntilNow -= 3600;
 		}
-		
+
 		while (secondsUntilNow >= 60) {
 			minutes += 1;
 			secondsUntilNow -= 60;
 		}
-		
+
 		secondes = (int) secondsUntilNow;
-		heures++; //On est a GMT + 1
+		heures++; // On est a GMT + 1
 	}
 
 	private int daysForMonth(int annee, Mois mois) {
 		int days = 30;
 		switch (mois) {
-			case Fevrier:
-				if (isLeapYear(annee)) {
-					days = 29;
-				} else {
-					days = 28;
-				}
-				break;
-			case Octobre:
-			case Decembre:
-			case Aout:
-			case Juillet:
-			case Mai:
-			case Mars:
-			case Janvier:
-				days = 31;
-				break;
-			default:
-				break;
+		case Fevrier:
+			if (isLeapYear(annee)) {
+				days = 29;
+			} else {
+				days = 28;
+			}
+			break;
+		case Octobre:
+		case Decembre:
+		case Aout:
+		case Juillet:
+		case Mai:
+		case Mars:
+		case Janvier:
+			days = 31;
+			break;
+		default:
+			break;
 		}
 		return days;
 	}
@@ -93,17 +104,17 @@ public class Temps implements Runnable {
 	private boolean isLeapYear(int annee) {
 		return (annee % 4) == 0;
 	}
-
-	@Override
-	public void run() {
-		while (true) {
-			waitOneSeconde();
-			update();
-			System.out.println(this);
-		}
+	
+	public void zero() {
+		annee = 0;
+		mois = Mois.Janvier;
+		jours = 0;
+		heures = 0;
+		minutes = 0;
+		secondes = 0;
 	}
 
-	private void update() {
+	public void update() {
 		secondes++;
 
 		updateMinute();
@@ -186,20 +197,17 @@ public class Temps implements Runnable {
 
 		}
 	}
+	
+	public Time clone() {
+		return new Time(annee, mois, jours, heures, minutes, secondes);
+	}
 
-	private void waitOneSeconde() {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
+	public String heureMinutesSeconde() {
+		return heures + " / " + minutes + " / " + secondes;
 	}
 
 	public String toString() {
 		return "[ " + jours + " / " + mois + " / " + annee + " ] " + heures
 				+ " / " + minutes + " / " + secondes;
-	}
-
-	public static void main(String[] args) {
-		new Thread(new Temps()).start();
 	}
 }
