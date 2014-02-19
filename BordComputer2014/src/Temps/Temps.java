@@ -14,22 +14,85 @@ public class Temps implements Runnable {
 		Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Septembre, Octobre, Novembre, Decembre
 	}
 
-	private int annee;
-	private Mois mois;
-	private int jours;
-	private int heures;
-	private int minutes;
-	private int secondes;
+	private int annee = 1970;
+	private Mois mois = Mois.Janvier;
+	private int jours = 1;
+	private int heures = 0;
+	private int minutes = 0;
+	private int secondes = 0;
 	
 	public Temps() {
-		Date date = new Date(System.currentTimeMillis());
+		long secondsUntilNow = System.currentTimeMillis() / 1000;
+		int nombre_sec_jour = 60 * 60 * 24;
+		int nombre_sec_annee = nombre_sec_jour * 365;
 		
-		annee = 2014;
-		mois = Mois.Decembre;
-		jours = 31;
-		heures = 23;
-		minutes = 59;
-		secondes = 55;
+		boolean end = false;
+	    while (secondsUntilNow > nombre_sec_annee && !end) {
+	        if (isLeapYear(annee)) {
+	            if (secondsUntilNow > nombre_sec_annee + nombre_sec_jour) {
+	                secondsUntilNow -= (nombre_sec_annee + nombre_sec_jour);
+	                annee += 1;
+	            } else {
+					end = true;
+	            }
+	        } else {
+	            secondsUntilNow -= nombre_sec_annee;
+	            annee += 1;
+	        }
+	    }
+	    
+	    while (secondsUntilNow > (daysForMonth(annee, mois) * nombre_sec_jour)) {
+			secondsUntilNow -= (daysForMonth(annee, mois) * nombre_sec_jour);
+			mois = Mois.values()[mois.ordinal() + 1];
+		}
+	    
+	    mois = Mois.values()[mois.ordinal() - 1];
+		
+		while (secondsUntilNow > nombre_sec_jour) {
+			jours += 1;
+			secondsUntilNow -= nombre_sec_jour;
+		}
+		
+		while (secondsUntilNow > 3600) {
+			heures += 1;
+			secondsUntilNow -= 3600;
+		}
+		
+		while (secondsUntilNow > 60) {
+			minutes += 1;
+			secondsUntilNow -= 60;
+		}
+		
+		secondes = (int) secondsUntilNow;
+	}
+
+	private int daysForMonth(int annee, Mois mois) {
+		int days = 30;
+		switch (mois) {
+			case Fevrier:
+				if (isLeapYear(annee)) {
+					days = 29;
+				} else {
+					days = 28;
+				}
+				break;
+			case Octobre:
+			case Decembre:
+			case Aout:
+			case Juillet:
+			case Mai:
+			case Mars:
+			case Janvier:
+				days = 31;
+				break;
+			default:
+				break;
+		}
+		return days;
+	}
+
+	private boolean isLeapYear(int annee) {
+		return (annee % 4) == 0;
 	}
 
 	@Override
