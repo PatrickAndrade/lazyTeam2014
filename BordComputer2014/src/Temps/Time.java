@@ -8,7 +8,7 @@ package Temps;
  */
 public class Time {
 
-	enum Mois {
+	private enum Mois {
 		Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Septembre, Octobre, Novembre, Decembre
 	}
 
@@ -209,5 +209,9 @@ public class Time {
 	public String toString() {
 		return "[ " + jours + " / " + mois + " / " + annee + " ] " + heures
 				+ " / " + minutes + " / " + secondes;
+	}
+	
+	public int totalSeconds(){
+	    return jours * 3600 * 24 + heures * 3600 + minutes * 60 + secondes;
 	}
 }

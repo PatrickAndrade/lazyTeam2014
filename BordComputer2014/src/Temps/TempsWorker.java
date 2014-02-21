@@ -19,7 +19,7 @@ public class TempsWorker implements Runnable {
 		tempsDeParcourt = new Time();
 		tempsDeParcourt.zero();
 		chronometre = new Time();
-		chronometre.zero();
+		//chronometre.zero();
 	}
 
 	private void waitOneSeconde() {
@@ -37,6 +37,10 @@ public class TempsWorker implements Runnable {
 		System.out.println("Temps de parcourt : "
 				+ tempsDeParcourt.heureMinutesSeconde());
 	}
+	
+	public synchronized Time getTempsDeParcourt() {
+	    return tempsDeParcourt;
+	}
 
 	public synchronized void startChronometre() {
 		chronometre.zero();
@@ -49,7 +53,11 @@ public class TempsWorker implements Runnable {
 
 	public synchronized void afficherChronometre() {
 		System.out
-				.println("Chronometre : " + chronometre.heureMinutesSeconde());
+				.println("Chronometer : " + chronometre.heureMinutesSeconde());
+	}
+	
+	public String toString() {
+	    return maintenant.toString();
 	}
 
 	private synchronized void update() {
@@ -66,21 +74,21 @@ public class TempsWorker implements Runnable {
 		while (true) {
 			waitOneSeconde();
 			update();
-			System.out.println("Date : " + maintenant);
-			afficherTempsDeParcourt();
-			afficherChronometre();
+			//System.out.println("Date : " + maintenant);
+			//afficherTempsDeParcourt();
+			//afficherChronometre();
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		TempsWorker t = new TempsWorker();
-		new Thread(t).start();
-		
-		Thread.sleep(5000);
-		t.startChronometre();
-		Thread.sleep(7000);
-		t.stopChronometre();
-		t.reset();
-		
-	}
+//	public static void main(String[] args) throws InterruptedException {
+//		TempsWorker t = new TempsWorker();
+//		new Thread(t).start();
+//		
+//		Thread.sleep(5000);
+//		t.startChronometre();
+//		Thread.sleep(7000);
+//		t.stopChronometre();
+//		t.reset();
+//		
+//	}
 }
