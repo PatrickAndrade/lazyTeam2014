@@ -2,8 +2,6 @@ package Temps;
 
 import java.util.ArrayList;
 
-import javax.print.attribute.Size2DSyntax;
-
 /**
  * TODO: Comment this class
  * 

@@ -55,6 +55,8 @@ public class Window extends JFrame {
 	private JTextArea lapTextArea;
 	
 	private JScrollPane scrollPane;
+	
+	private JButton resetTimeRunsButton;
 
 	/**
 	 * Launch the application.
@@ -149,6 +151,15 @@ public class Window extends JFrame {
 		lapTextArea.setLineWrap(true);
 		lapTextArea.setWrapStyleWord(true);
 		lapTextArea.setEditable(false);
+		
+		resetTimeRunsButton = new JButton("Reset time runs");
+		resetTimeRunsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				time.resetTimeRuns();
+			}
+		});
+		resetTimeRunsButton.setBounds(22, 140, 156, 25);
+		contentPane.add(resetTimeRunsButton);
 
 		// Code pour lier les composants
 		time = new TimeWorker(this);

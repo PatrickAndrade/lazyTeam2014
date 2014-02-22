@@ -31,7 +31,7 @@ public class TimeWorker implements Runnable {
 		}
 	}
 
-	public void reset() {
+	public void resetTimeRuns() {
 		timeRuns.reset();
 	}
 
@@ -84,15 +84,4 @@ public class TimeWorker implements Runnable {
 			update();
 		}
 	}
-
-	// public static void main(String[] args) throws InterruptedException {
-	// TimeWorker t = new TimeWorker();
-	// new Thread(t).start();
-	//
-	// Thread.sleep(5000);
-	// t.startChronometer();
-	// Thread.sleep(7000);
-	// t.stopChronometer();
-	// t.reset();
-	// }
 }
