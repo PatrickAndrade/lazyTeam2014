@@ -1,23 +1,27 @@
 package Temps;
 
+import GUI.Window;
+
 /**
  * TODO: Comment this class
  * 
  * @author Gregory Maitre & Patrick Andrade
  * 
  */
-public class TempsWorker implements Runnable {
+public class TimeWorker implements Runnable {
 
 	private Time now;
 	private Time timeRuns;
 	private Chronometer chronometer;
+	private Window window;
 
-	public TempsWorker() {
+	public TimeWorker(Window window) {
 		now = new Time();
 		now.now();
 		timeRuns = new Time();
 		timeRuns.reset();
 		chronometer = new Chronometer();
+		this.window = window;
 	}
 
 	private void waitOneSeconde() {
@@ -30,17 +34,20 @@ public class TempsWorker implements Runnable {
 	public void reset() {
 		timeRuns.reset();
 	}
-
-	public void showTimeRuns() {
-		System.out.println("Temps de parcourt : "
-				+ timeRuns.getHourMinuteSecond());
+	
+	public String getTimeRuns() {
+	    return timeRuns.getHourMinuteSecond();
 	}
 	
-	public Time getTimeRuns() {
-	    return timeRuns;
+	public String getChronometer() {
+		return chronometer.toString();
+	}
+	
+	public String getTime() {
+	    return now.toString();
 	}
 
-	public void startChronometrer() {
+	public void startChronometer() {
 		chronometer.start();
 	}
 	
@@ -56,19 +63,11 @@ public class TempsWorker implements Runnable {
 		chronometer.stop();
 	}
 
-	public void showChronometer() {
-		System.out
-				.println(chronometer);
-	}
-	
-	public String toString() {
-	    return now.toString();
-	}
-
 	private void update() {
 		now.update();
 		timeRuns.update();
 		chronometer.update();
+		window.updateTime();
 	}
 
 	@Override
@@ -76,20 +75,17 @@ public class TempsWorker implements Runnable {
 		while (true) {
 			waitOneSeconde();
 			update();
-			System.out.println("Date : " + now);
-			showTimeRuns();
-			showChronometer();
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		TempsWorker t = new TempsWorker();
-		new Thread(t).start();
-		
-		Thread.sleep(5000);
-		t.startChronometrer();
-		Thread.sleep(7000);
-		t.stopChronometer();
-		t.reset();
-	}
+//	public static void main(String[] args) throws InterruptedException {
+//		TimeWorker t = new TimeWorker();
+//		new Thread(t).start();
+//		
+//		Thread.sleep(5000);
+//		t.startChronometer();
+//		Thread.sleep(7000);
+//		t.stopChronometer();
+//		t.reset();
+//	}
 }

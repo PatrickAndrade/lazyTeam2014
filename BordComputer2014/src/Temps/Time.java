@@ -67,7 +67,7 @@ public class Time {
 		return hour + " / " + minutes + " / " + seconds;
 	}
 
-	public String toString() {
+	public synchronized String toString() {
 		return "[ " + day + " / " + month + " / " + year + " ] " + hour
 				+ " / " + minutes + " / " + seconds;
 	}

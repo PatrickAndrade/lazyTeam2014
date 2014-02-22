@@ -1,6 +1,6 @@
 package Computer;
 
-import Temps.TempsWorker;
+import Temps.TimeWorker;
 
 /**
  * This class is the main class of the project since it stores the main methods
@@ -9,7 +9,7 @@ import Temps.TempsWorker;
  * 
  */
 public class BordComputer implements Runnable {
-    private TempsWorker mInternalClock = new TempsWorker();
+    private TimeWorker mInternalClock = new TimeWorker();
 
     private double mWheelRadius = 0.38; // Let's suppose that a wheel's radius
                                         // is approximatively 38cm
@@ -29,7 +29,7 @@ public class BordComputer implements Runnable {
     }
 
     public void startChronometer() {
-        mInternalClock.startChronometrer();
+        mInternalClock.startChronometer();
     }
 
     public void stopChronometer() {

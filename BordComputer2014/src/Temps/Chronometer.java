@@ -31,6 +31,10 @@ public class Chronometer {
 	}
 	
 	public synchronized void lap() {
+		if (count == null) {
+			return;
+		}
+		
 		Time newLap;
 		if (laps.isEmpty()) {
 			newLap = count.clone();
@@ -56,6 +60,6 @@ public class Chronometer {
 	}
 	
 	public synchronized String toString() {
-		return count.toString();
+		return (count == null) ? "0 / 0 / 0" : count.getHourMinuteSecond();
 	}
 }
