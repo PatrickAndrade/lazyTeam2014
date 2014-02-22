@@ -12,10 +12,12 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 
+import Computer.BordComputer;
 import Temps.TimeWorker;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
@@ -31,6 +33,8 @@ import javax.swing.JScrollPane;
 public class Window extends JFrame {
 
 	private TimeWorker time;
+	
+	private BordComputer bordComputer;
 
 	private JPanel contentPane;
 
@@ -163,14 +167,56 @@ public class Window extends JFrame {
 
 		// Code pour lier les composants
 		time = new TimeWorker(this);
+//		bordComputer = new BordComputer(time, this);
+		
 		new Thread(time).start();
 
 		updateTime();
 	}
 
-	public void updateTime() {
+	public synchronized void updateTime() {
 		timeLabel.setText("Time: " + time.getTime());
 		chronometerLabel.setText("Chronometer: " + time.getChronometer());
 		timeRunsLabel.setText("Time runs : " + time.getTimeRuns());
+	}
+
+	public void updateAutonomieDisponible(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateConsommationInstantanee(double mInstantaneousConsumption) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateConsommationMoyenne(double mMediumConsumption) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateDistanceToObective(double mTripDistanceCovered) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateKilometrageParcourus(double mDistanceCovered) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateVitesseInstantannee(double mInstantaneousSpeed) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateVitesseMoyenne(double mMediumSpeed) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateVolumeEssenceDisponible(Object object) {
+		// TODO Auto-generated method stub
+		
 	}
 }

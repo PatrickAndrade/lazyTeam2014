@@ -33,6 +33,7 @@ public class TimeWorker implements Runnable {
 
 	public void resetTimeRuns() {
 		timeRuns.reset();
+		window.updateTime();
 	}
 
 	public String getTimeRuns() {
