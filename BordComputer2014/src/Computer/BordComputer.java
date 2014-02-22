@@ -51,7 +51,6 @@ public class BordComputer implements Runnable {
     }
     
     public void printInstantaneousConsumption() {
-        System.out.println("Instantanous consumption : " + roundAtTwoDecimals(mInstantaneousConsumption) + " l/m");
         System.out.println("Instantanous consumption : " + roundAtTwoDecimals(mInstantaneousConsumption * 1000.0 * 100.0) + " l/100km");
     }
 
@@ -61,7 +60,6 @@ public class BordComputer implements Runnable {
     }
 
     public void printInstantaneousSpeed() {
-        System.out.println("Instantanous speed : " + roundAtTwoDecimals(mInstantaneousSpeed) + " m/s");
         System.out.println("Instantanous speed : " + roundAtTwoDecimals(mInstantaneousSpeed * 3.6) + " km/h");
     }
 
@@ -99,7 +97,7 @@ public class BordComputer implements Runnable {
     public void run() {
         new Thread(mInternalClock).start();
         double hallEffect = 0.0;
-        double injection = 0.0;
+        double injection = 1;
         while (true) {
             computeInstantaneousSpeed(hallEffect);
             computeInstantaneousConsumption(injection);
@@ -115,7 +113,6 @@ public class BordComputer implements Runnable {
             } catch (InterruptedException e) {
             }
             hallEffect++;
-            injection += 0.01;
         }
     }
 
