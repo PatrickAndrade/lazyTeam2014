@@ -9,7 +9,7 @@ import Temps.TimeWorker;
  * 
  */
 public class BordComputer implements Runnable {
-    private TimeWorker mInternalClock = new TimeWorker();
+    private TimeWorker mInternalClock;
 
     private double mWheelRadius = 0.38; // Let's suppose that a wheel's radius
                                         // is approximatively 38cm
@@ -23,9 +23,9 @@ public class BordComputer implements Runnable {
 
     
     private int mSleepingTime = 500;
-
-    public BordComputer(double wheelRadius) {
-        mWheelRadius = wheelRadius;
+    
+    public BordComputer(TimeWorker timeWorker) {
+    	mInternalClock = timeWorker;
     }
 
     public void startChronometer() {
@@ -37,7 +37,7 @@ public class BordComputer implements Runnable {
     }
 
     public void printChronometer() {
-        mInternalClock.showChronometer();
+        System.out.println(mInternalClock.getChronometer());
     }
 
     public void printClock() {
@@ -117,7 +117,7 @@ public class BordComputer implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        BordComputer b = new BordComputer(0.38);
+        BordComputer b = new BordComputer(new TimeWorker(null));
         b.printClock();
         new Thread(b).start();
     }

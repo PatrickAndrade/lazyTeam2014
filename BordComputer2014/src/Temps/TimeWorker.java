@@ -34,27 +34,31 @@ public class TimeWorker implements Runnable {
 	public void reset() {
 		timeRuns.reset();
 	}
-	
+
 	public String getTimeRuns() {
-	    return timeRuns.getHourMinuteSecond();
+		return timeRuns.getHourMinuteSecond();
 	}
-	
+
 	public String getChronometer() {
 		return chronometer.toString();
 	}
-	
+
 	public String getTime() {
-	    return now.toString();
+		return now.toString();
+	}
+
+	public String getLastLap() {
+		return chronometer.lastLap();
 	}
 
 	public void startChronometer() {
 		chronometer.start();
 	}
-	
+
 	public void pauseChronometer() {
 		chronometer.pause();
 	}
-	
+
 	public void lapChronometer() {
 		chronometer.lap();
 	}
@@ -67,7 +71,10 @@ public class TimeWorker implements Runnable {
 		now.update();
 		timeRuns.update();
 		chronometer.update();
-		window.updateTime();
+
+		if (window != null) {
+			window.updateTime();
+		}
 	}
 
 	@Override
@@ -78,14 +85,14 @@ public class TimeWorker implements Runnable {
 		}
 	}
 
-//	public static void main(String[] args) throws InterruptedException {
-//		TimeWorker t = new TimeWorker();
-//		new Thread(t).start();
-//		
-//		Thread.sleep(5000);
-//		t.startChronometer();
-//		Thread.sleep(7000);
-//		t.stopChronometer();
-//		t.reset();
-//	}
+	// public static void main(String[] args) throws InterruptedException {
+	// TimeWorker t = new TimeWorker();
+	// new Thread(t).start();
+	//
+	// Thread.sleep(5000);
+	// t.startChronometer();
+	// Thread.sleep(7000);
+	// t.stopChronometer();
+	// t.reset();
+	// }
 }

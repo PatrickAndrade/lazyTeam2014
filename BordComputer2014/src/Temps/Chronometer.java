@@ -2,6 +2,8 @@ package Temps;
 
 import java.util.ArrayList;
 
+import javax.print.attribute.Size2DSyntax;
+
 /**
  * TODO: Comment this class
  * 
@@ -10,6 +12,7 @@ import java.util.ArrayList;
  */
 public class Chronometer {
 	private Time count;
+	private Time lastLapTime;
 	private ArrayList<Time> laps;
 	private boolean isChronometerCount;
 	
@@ -21,6 +24,7 @@ public class Chronometer {
 	public synchronized void start() {
 		if (count == null) {
 			count = new Time();
+			lastLapTime = null;
 			laps.clear();
 		}
 		isChronometerCount = true;
@@ -36,21 +40,30 @@ public class Chronometer {
 		}
 		
 		Time newLap;
-		if (laps.isEmpty()) {
+		if (lastLapTime == null) {
 			newLap = count.clone();
 		} else {
 			int totalSecondsNow = count.totalSeconds();
-			int totalSecondsLastLap = laps.get(laps.size() - 1).totalSeconds();
+			int totalSecondsLastLap = lastLapTime.totalSeconds();
 			newLap = new Time(totalSecondsNow - totalSecondsLastLap);
 		}
-		 
+		
 		laps.add(newLap);
+		lastLapTime = count.clone();
 	}
 	
 	public synchronized void stop() {
 		pause();
 		lap();
 		count = null;
+	}
+	
+	public synchronized String lastLap() {
+		int size = laps.size();
+		if (size == 0) {
+			return "";
+		}
+		return laps.get(size - 1).getHourMinuteSecond();
 	}
 	
 	public synchronized void update() {

@@ -39,6 +39,7 @@ public class Time {
 	public synchronized void now() {
 		long secondsUntilNow = System.currentTimeMillis() / 1000;
 		convertSecondsToTime(secondsUntilNow);
+		hour++; // On est a GMT + 1
 	}
 	
 	public synchronized void reset() {
@@ -115,8 +116,7 @@ public class Time {
 			seconds -= 60;
 		}
 
-		seconds = (int) seconds;
-		hour++; // On est a GMT + 1
+		this.seconds = (int) seconds;
 	}
 	
 	private int daysForMonth(int year, Mois month) {
