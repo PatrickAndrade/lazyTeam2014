@@ -8,18 +8,16 @@ package Temps;
  */
 public class TempsWorker implements Runnable {
 
-	private Time maintenant;
-	private Time tempsDeParcourt;
-	private Time chronometre;
-	private boolean isChronometreCount = false;
+	private Time now;
+	private Time timeRuns;
+	private Chronometer chronometer;
 
 	public TempsWorker() {
-		maintenant = new Time();
-		maintenant.now();
-		tempsDeParcourt = new Time();
-		tempsDeParcourt.zero();
-		chronometre = new Time();
-		//chronometre.zero();
+		now = new Time();
+		now.now();
+		timeRuns = new Time();
+		timeRuns.reset();
+		chronometer = new Chronometer();
 	}
 
 	private void waitOneSeconde() {
@@ -30,43 +28,47 @@ public class TempsWorker implements Runnable {
 	}
 
 	public void reset() {
-		tempsDeParcourt.zero();
+		timeRuns.reset();
 	}
 
-	public synchronized void afficherTempsDeParcourt() {
+	public void showTimeRuns() {
 		System.out.println("Temps de parcourt : "
-				+ tempsDeParcourt.heureMinutesSeconde());
+				+ timeRuns.getHourMinuteSecond());
 	}
 	
-	public synchronized Time getTempsDeParcourt() {
-	    return tempsDeParcourt;
+	public Time getTimeRuns() {
+	    return timeRuns;
 	}
 
-	public synchronized void startChronometre() {
-		chronometre.zero();
-		isChronometreCount = true;
+	public void startChronometrer() {
+		chronometer.start();
+	}
+	
+	public void pauseChronometer() {
+		chronometer.pause();
+	}
+	
+	public void lapChronometer() {
+		chronometer.lap();
 	}
 
-	public synchronized void stopChronometre() {
-		isChronometreCount = false;
+	public void stopChronometer() {
+		chronometer.stop();
 	}
 
-	public synchronized void afficherChronometre() {
+	public void showChronometer() {
 		System.out
-				.println("Chronometer : " + chronometre.heureMinutesSeconde());
+				.println(chronometer);
 	}
 	
 	public String toString() {
-	    return maintenant.toString();
+	    return now.toString();
 	}
 
-	private synchronized void update() {
-		maintenant.update();
-		tempsDeParcourt.update();
-
-		if (isChronometreCount) {
-			chronometre.update();
-		}
+	private void update() {
+		now.update();
+		timeRuns.update();
+		chronometer.update();
 	}
 
 	@Override
@@ -74,21 +76,20 @@ public class TempsWorker implements Runnable {
 		while (true) {
 			waitOneSeconde();
 			update();
-			//System.out.println("Date : " + maintenant);
-			//afficherTempsDeParcourt();
-			//afficherChronometre();
+			System.out.println("Date : " + now);
+			showTimeRuns();
+			showChronometer();
 		}
 	}
 
-//	public static void main(String[] args) throws InterruptedException {
-//		TempsWorker t = new TempsWorker();
-//		new Thread(t).start();
-//		
-//		Thread.sleep(5000);
-//		t.startChronometre();
-//		Thread.sleep(7000);
-//		t.stopChronometre();
-//		t.reset();
-//		
-//	}
+	public static void main(String[] args) throws InterruptedException {
+		TempsWorker t = new TempsWorker();
+		new Thread(t).start();
+		
+		Thread.sleep(5000);
+		t.startChronometrer();
+		Thread.sleep(7000);
+		t.stopChronometer();
+		t.reset();
+	}
 }

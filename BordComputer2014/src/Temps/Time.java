@@ -12,58 +12,58 @@ public class Time {
 		Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet, Aout, Septembre, Octobre, Novembre, Decembre
 	}
 
-	private int annee = 1970;
-	private Mois mois = Mois.Janvier;
-	private int jours = 1;
-	private int heures = 0;
+	private int year = 1970;
+	private Mois month = Mois.Janvier;
+	private int day = 1;
+	private int hour = 0;
 	private int minutes = 0;
-	private int secondes = 0;
+	private int seconds = 0;
 
-	public Time(int annee, Mois mois, int jours, int heures, int minutes,
-			int secondes) {
-		this.annee = annee;
-		this.mois = mois;
-		this.jours = jours;
-		this.heures = heures;
+	public Time(int year, Mois month, int day, int hour, int minutes,
+			int seconds) {
+		this.year = year;
+		this.month = month;
+		this.day = day;
+		this.hour = hour;
 		this.minutes = minutes;
-		this.secondes = secondes;
+		this.seconds = seconds;
 	}
 	
 	public Time() {
 	}
 
-	public void now() {
+	public synchronized void now() {
 		long secondsUntilNow = System.currentTimeMillis() / 1000;
-		int nombre_sec_jour = 60 * 60 * 24;
-		int nombre_sec_annee = nombre_sec_jour * 365;
+		int numberSecondsDay = 60 * 60 * 24;
+		int numberSecondsYear = numberSecondsDay * 365;
 
 		boolean end = false;
-		while (secondsUntilNow >= nombre_sec_annee && !end) {
-			if (isLeapYear(annee)) {
-				if (secondsUntilNow >= nombre_sec_annee + nombre_sec_jour) {
-					secondsUntilNow -= (nombre_sec_annee + nombre_sec_jour);
-					annee += 1;
+		while (secondsUntilNow >= numberSecondsYear && !end) {
+			if (isLeapYear(year)) {
+				if (secondsUntilNow >= numberSecondsYear + numberSecondsDay) {
+					secondsUntilNow -= (numberSecondsYear + numberSecondsDay);
+					year += 1;
 				} else {
 					end = true;
 				}
 			} else {
-				secondsUntilNow -= nombre_sec_annee;
-				annee += 1;
+				secondsUntilNow -= numberSecondsYear;
+				year += 1;
 			}
 		}
 
-		while (secondsUntilNow >= (daysForMonth(annee, mois) * nombre_sec_jour)) {
-			secondsUntilNow -= (daysForMonth(annee, mois) * nombre_sec_jour);
-			mois = Mois.values()[mois.ordinal() + 1];
+		while (secondsUntilNow >= (daysForMonth(year, month) * numberSecondsDay)) {
+			secondsUntilNow -= (daysForMonth(year, month) * numberSecondsDay);
+			month = Mois.values()[month.ordinal() + 1];
 		}
 
-		while (secondsUntilNow >= nombre_sec_jour) {
-			jours += 1;
-			secondsUntilNow -= nombre_sec_jour;
+		while (secondsUntilNow >= numberSecondsDay) {
+			day += 1;
+			secondsUntilNow -= numberSecondsDay;
 		}
 
 		while (secondsUntilNow >= 3600) {
-			heures += 1;
+			hour += 1;
 			secondsUntilNow -= 3600;
 		}
 
@@ -72,15 +72,50 @@ public class Time {
 			secondsUntilNow -= 60;
 		}
 
-		secondes = (int) secondsUntilNow;
-		heures++; // On est a GMT + 1
+		seconds = (int) secondsUntilNow;
+		hour++; // On est a GMT + 1
+	}
+	
+	public synchronized void reset() {
+		year = 0;
+		month = Mois.Janvier;
+		day = 1;
+		hour = 0;
+		minutes = 0;
+		seconds = 0;
 	}
 
-	private int daysForMonth(int annee, Mois mois) {
+	public synchronized void update() {
+		seconds++;
+
+		updateMinute();
+		updateHour();
+		updateDay();
+		updateMonth();
+	}
+	
+	public synchronized Time clone() {
+		return new Time(year, month, day, hour, minutes, seconds);
+	}
+
+	public synchronized String getHourMinuteSecond() {
+		return hour + " / " + minutes + " / " + seconds;
+	}
+
+	public String toString() {
+		return "[ " + day + " / " + month + " / " + year + " ] " + hour
+				+ " / " + minutes + " / " + seconds;
+	}
+	
+	public synchronized int totalSeconds(){
+	    return day * 3600 * 24 + hour * 3600 + minutes * 60 + seconds;
+	}
+	
+	private int daysForMonth(int year, Mois month) {
 		int days = 30;
-		switch (mois) {
+		switch (month) {
 		case Fevrier:
-			if (isLeapYear(annee)) {
+			if (isLeapYear(year)) {
 				days = 29;
 			} else {
 				days = 28;
@@ -101,61 +136,43 @@ public class Time {
 		return days;
 	}
 
-	private boolean isLeapYear(int annee) {
-		return (annee % 4) == 0;
+	private boolean isLeapYear(int year) {
+		return (year % 4) == 0;
 	}
 	
-	public void zero() {
-		annee = 0;
-		mois = Mois.Janvier;
-		jours = 0;
-		heures = 0;
-		minutes = 0;
-		secondes = 0;
-	}
-
-	public void update() {
-		secondes++;
-
-		updateMinute();
-		updateHeure();
-		updateJour();
-		updateMois();
-	}
-
 	private void updateMinute() {
-		if (secondes >= 60) {
+		if (seconds >= 60) {
 			minutes++;
-			secondes = 0;
+			seconds = 0;
 		}
 	}
 
-	private void updateHeure() {
+	private void updateHour() {
 		if (minutes >= 60) {
-			heures++;
+			hour++;
 			minutes = 0;
 		}
 	}
 
-	private void updateJour() {
-		if (heures >= 24) {
-			jours++;
-			heures = 0;
+	private void updateDay() {
+		if (hour >= 24) {
+			day++;
+			hour = 0;
 		}
 	}
 
-	private void updateMois() {
+	private void updateMonth() {
 
-		switch (mois) {
+		switch (month) {
 
 		case Novembre:
 		case Septembre:
 		case Avril:
 		case Juin:
-			if (jours >= 31) {
-				int next = mois.ordinal() + 1;
-				mois = Mois.values()[next];
-				jours = 1;
+			if (day >= 31) {
+				int next = month.ordinal() + 1;
+				month = Mois.values()[next];
+				day = 1;
 			}
 			break;
 
@@ -166,28 +183,28 @@ public class Time {
 		case Mai:
 		case Mars:
 		case Janvier:
-			if (jours >= 32) {
-				int next = (mois.ordinal() + 1) % 12;
+			if (day >= 32) {
+				int next = (month.ordinal() + 1) % 12;
 
 				if (next == 0) {
-					annee++;
+					year++;
 				}
 
-				mois = Mois.values()[next];
-				jours = 1;
+				month = Mois.values()[next];
+				day = 1;
 			}
 			break;
 
 		case Fevrier:
-			if (annee % 4 == 0) {
-				if (jours >= 30) {
-					mois = Mois.Mars;
-					jours = 1;
+			if (year % 4 == 0) {
+				if (day >= 30) {
+					month = Mois.Mars;
+					day = 1;
 				}
 			} else {
-				if (jours >= 29) {
-					mois = Mois.Mars;
-					jours = 1;
+				if (day >= 29) {
+					month = Mois.Mars;
+					day = 1;
 				}
 			}
 			break;
@@ -196,22 +213,5 @@ public class Time {
 			break;
 
 		}
-	}
-	
-	public Time clone() {
-		return new Time(annee, mois, jours, heures, minutes, secondes);
-	}
-
-	public String heureMinutesSeconde() {
-		return heures + " / " + minutes + " / " + secondes;
-	}
-
-	public String toString() {
-		return "[ " + jours + " / " + mois + " / " + annee + " ] " + heures
-				+ " / " + minutes + " / " + secondes;
-	}
-	
-	public int totalSeconds(){
-	    return jours * 3600 * 24 + heures * 3600 + minutes * 60 + secondes;
 	}
 }

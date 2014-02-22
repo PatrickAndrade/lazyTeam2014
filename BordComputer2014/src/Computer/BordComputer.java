@@ -29,15 +29,15 @@ public class BordComputer implements Runnable {
     }
 
     public void startChronometer() {
-        mInternalClock.startChronometre();
+        mInternalClock.startChronometrer();
     }
 
     public void stopChronometer() {
-        mInternalClock.stopChronometre();
+        mInternalClock.stopChronometer();
     }
 
     public void printChronometer() {
-        mInternalClock.afficherChronometre();
+        mInternalClock.showChronometer();
     }
 
     public void printClock() {
