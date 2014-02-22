@@ -32,48 +32,13 @@ public class Time {
 	public Time() {
 	}
 
+	public Time(int seconds) {
+		convertSecondsToTime(seconds);
+	}
+
 	public synchronized void now() {
 		long secondsUntilNow = System.currentTimeMillis() / 1000;
-		int numberSecondsDay = 60 * 60 * 24;
-		int numberSecondsYear = numberSecondsDay * 365;
-
-		boolean end = false;
-		while (secondsUntilNow >= numberSecondsYear && !end) {
-			if (isLeapYear(year)) {
-				if (secondsUntilNow >= numberSecondsYear + numberSecondsDay) {
-					secondsUntilNow -= (numberSecondsYear + numberSecondsDay);
-					year += 1;
-				} else {
-					end = true;
-				}
-			} else {
-				secondsUntilNow -= numberSecondsYear;
-				year += 1;
-			}
-		}
-
-		while (secondsUntilNow >= (daysForMonth(year, month) * numberSecondsDay)) {
-			secondsUntilNow -= (daysForMonth(year, month) * numberSecondsDay);
-			month = Mois.values()[month.ordinal() + 1];
-		}
-
-		while (secondsUntilNow >= numberSecondsDay) {
-			day += 1;
-			secondsUntilNow -= numberSecondsDay;
-		}
-
-		while (secondsUntilNow >= 3600) {
-			hour += 1;
-			secondsUntilNow -= 3600;
-		}
-
-		while (secondsUntilNow >= 60) {
-			minutes += 1;
-			secondsUntilNow -= 60;
-		}
-
-		seconds = (int) secondsUntilNow;
-		hour++; // On est a GMT + 1
+		convertSecondsToTime(secondsUntilNow);
 	}
 	
 	public synchronized void reset() {
@@ -109,6 +74,49 @@ public class Time {
 	
 	public synchronized int totalSeconds(){
 	    return day * 3600 * 24 + hour * 3600 + minutes * 60 + seconds;
+	}
+	
+	private void convertSecondsToTime(long seconds) {
+		int numberSecondsDay = 60 * 60 * 24;
+		int numberSecondsYear = numberSecondsDay * 365;
+
+		boolean end = false;
+		while (seconds >= numberSecondsYear && !end) {
+			if (isLeapYear(year)) {
+				if (seconds >= numberSecondsYear + numberSecondsDay) {
+					seconds -= (numberSecondsYear + numberSecondsDay);
+					year += 1;
+				} else {
+					end = true;
+				}
+			} else {
+				seconds -= numberSecondsYear;
+				year += 1;
+			}
+		}
+
+		while (seconds >= (daysForMonth(year, month) * numberSecondsDay)) {
+			seconds -= (daysForMonth(year, month) * numberSecondsDay);
+			month = Mois.values()[month.ordinal() + 1];
+		}
+
+		while (seconds >= numberSecondsDay) {
+			day += 1;
+			seconds -= numberSecondsDay;
+		}
+
+		while (seconds >= 3600) {
+			hour += 1;
+			seconds -= 3600;
+		}
+
+		while (seconds >= 60) {
+			minutes += 1;
+			seconds -= 60;
+		}
+
+		seconds = (int) seconds;
+		hour++; // On est a GMT + 1
 	}
 	
 	private int daysForMonth(int year, Mois month) {

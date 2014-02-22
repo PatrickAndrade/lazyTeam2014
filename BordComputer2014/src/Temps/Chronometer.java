@@ -31,7 +31,16 @@ public class Chronometer {
 	}
 	
 	public synchronized void lap() {
-		laps.add(count);
+		Time newLap;
+		if (laps.isEmpty()) {
+			newLap = count.clone();
+		} else {
+			int totalSecondsNow = count.totalSeconds();
+			int totalSecondsLastLap = laps.get(laps.size() - 1).totalSeconds();
+			newLap = new Time(totalSecondsNow - totalSecondsLastLap);
+		}
+		 
+		laps.add(newLap);
 	}
 	
 	public synchronized void stop() {
