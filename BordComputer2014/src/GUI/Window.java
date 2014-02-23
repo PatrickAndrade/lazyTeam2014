@@ -27,6 +27,7 @@ public class Window extends JFrame {
 	private TimeWorker time;
 	private BordComputer bordComputer;
 	private Sensors sensors;
+	private Graph graph;
 
 	private final String START = "Start";
 	private final String PAUSE = "Pause";
@@ -84,6 +85,7 @@ public class Window extends JFrame {
 	private JLabel vitesseMoyenneRAZLabel;
 
 	private JLabel vitesseInstantanneeLabel;
+	private JPanel graphPanel;
 
 	/**
 	 * Launch the application.
@@ -232,11 +234,25 @@ public class Window extends JFrame {
 				DISTANCE_TO_OBJECTIVE);
 		distancePrevuParRapportAUnObjectifLabel.setBounds(12, 219, 391, 16);
 		contentPane.add(distancePrevuParRapportAUnObjectifLabel);
+		
+		graphPanel = new JPanel();
+		graphPanel.setBounds(12, 262, 1012, 379);
+		contentPane.add(graphPanel);
 
 		// Code pour lier les composants
 		bordComputer = new BordComputer(this);
 		time = new TimeWorker(bordComputer, this);
 		sensors = new Sensors(bordComputer);
+		graph = new Graph(graphPanel);
+		
+		JButton btnNextGraph = new JButton("Next Graph");
+		btnNextGraph.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				graph.showNextGraph();
+			}
+		});
+		btnNextGraph.setBounds(480, 224, 97, 25);
+		contentPane.add(btnNextGraph);
 
 		new Thread(time).start();
 		new Thread(bordComputer).start();
