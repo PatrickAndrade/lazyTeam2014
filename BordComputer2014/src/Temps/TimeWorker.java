@@ -1,5 +1,6 @@
 package Temps;
 
+import Computer.BordComputer;
 import GUI.Window;
 
 /**
@@ -14,14 +15,16 @@ public class TimeWorker implements Runnable {
 	private Time timeRuns;
 	private Chronometer chronometer;
 	private Window window;
+	private BordComputer bordComputer;
 
-	public TimeWorker(Window window) {
+	public TimeWorker(BordComputer bordComputer, Window window) {
 		now = new Time();
 		now.now();
 		timeRuns = new Time();
 		timeRuns.reset();
 		chronometer = new Chronometer();
 		this.window = window;
+		this.bordComputer = bordComputer;
 	}
 
 	private void waitOneSeconde() {
@@ -72,6 +75,8 @@ public class TimeWorker implements Runnable {
 		now.update();
 		timeRuns.update();
 		chronometer.update();
+		bordComputer.updateSeconds();
+		
 
 		if (window != null) {
 			window.updateTime();

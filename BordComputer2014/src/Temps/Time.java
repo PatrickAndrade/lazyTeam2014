@@ -74,7 +74,7 @@ public class Time {
 	}
 	
 	public synchronized int totalSeconds(){
-	    return day * 3600 * 24 + hour * 3600 + minutes * 60 + seconds;
+	    return hour * 3600 + minutes * 60 + seconds;
 	}
 	
 	private void convertSecondsToTime(long seconds) {
