@@ -17,13 +17,14 @@ import Sensor.Sensors;
 import Time.TimeWorker;
 
 /**
- * TODO: Comment this class
+ * This is the main class that show the GUI and link each component
  * 
  * @author Gregory Maitre & Patrick Andrade
  * 
  */
 public class Window extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private TimeWorker time;
 	private BordComputer bordComputer;
 	private Sensors sensors;
@@ -328,6 +329,7 @@ public class Window extends JFrame {
 	}
 
 	public void positionMap(double latitude, double longitude) {
+		graph.map.clear();
 		graph.map.addPoint(latitude, longitude);
 	}
 }

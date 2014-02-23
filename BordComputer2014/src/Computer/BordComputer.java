@@ -1,6 +1,6 @@
 package Computer;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import GUI.Window;
 
@@ -35,11 +35,11 @@ public class BordComputer implements Runnable {
 	private int mSecondsSinceReset = 0;
 	private int mSecondsSinceLaunch = 0;
 
-	private ArrayBlockingQueue<Update> mEventUpdateQueue;
+	private ConcurrentLinkedQueue<Update> mEventUpdateQueue;
 
 	public BordComputer(Window window) {
 		mWindow = window;
-		mEventUpdateQueue = new ArrayBlockingQueue<Update>(100);
+		mEventUpdateQueue = new ConcurrentLinkedQueue<Update>();
 	}
 
 	public synchronized void computeInstantaneousSpeed(double hallEffect) {
