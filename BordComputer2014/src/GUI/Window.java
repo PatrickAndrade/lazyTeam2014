@@ -39,6 +39,8 @@ public class Window extends JFrame {
 	private final String kILOMETRAGE_PARCOURUS0 = "Kilometrage parcourus (de 0): ";
 	private final String CONSOMMATION_MOYENNE0 = "Consommation moyenne (de 0): ";
 	private final String CONSOMMATION_MOYENNE_RAZ = "Consommation moyenne (RAZ): ";
+	private final String VOLUME_DISPONIBLE = "Volume d'essence disponible: ";
+	private final String AUTONOMIE_DISPONIBLE = "Autonomie disponible: ";
 
 	private JPanel contentPane;
 
@@ -217,12 +219,12 @@ public class Window extends JFrame {
 		consommationMoyenne0Label = new JLabel(CONSOMMATION_MOYENNE0);
 		consommationMoyenne0Label.setBounds(12, 159, 320, 16);
 		contentPane.add(consommationMoyenne0Label);
-		
-		volumeDEssenceDisponibleLabel = new JLabel("Volume d'essence disponible: ");
+				
+		volumeDEssenceDisponibleLabel = new JLabel(VOLUME_DISPONIBLE);
 		volumeDEssenceDisponibleLabel.setBounds(12, 181, 269, 16);
 		contentPane.add(volumeDEssenceDisponibleLabel);
 		
-		autonomieDisponibleLabel = new JLabel("Autonomie disponible:");
+		autonomieDisponibleLabel = new JLabel(AUTONOMIE_DISPONIBLE);
 		autonomieDisponibleLabel.setBounds(12, 201, 230, 16);
 		contentPane.add(autonomieDisponibleLabel);
 		
@@ -233,8 +235,6 @@ public class Window extends JFrame {
 		// Code pour lier les composants
 		bordComputer = new BordComputer(this);
 		time = new TimeWorker(bordComputer, this);
-		bordComputer.setTime(time);
-
 		
 		new Thread(time).start();
 		new Thread(bordComputer).start();
@@ -248,9 +248,8 @@ public class Window extends JFrame {
 		timeRunsLabel.setText("Time runs : " + time.getTimeRuns());
 	}
 
-	public void updateAutonomieDisponible(Object object) {
-		// TODO Auto-generated method stub
-		
+	public void updateAutonomieDisponible(double autonomieDisponible) {
+		autonomieDisponibleLabel.setText(AUTONOMIE_DISPONIBLE + autonomieDisponible);
 	}
 
 	public void updateConsommationInstantanee(double mInstantaneousConsumption) {
@@ -273,7 +272,6 @@ public class Window extends JFrame {
 
 	public void updateVitesseInstantannee(double instantaneousSpeed) {
 		vitesseInstantanneeLabel.setText(VITESSE_INSTANTANNEE + instantaneousSpeed);
-		
 	}
 
 	public void updateVitesseMoyenne(double mediumSpeedRAZ, double mediumSpeedFrom0) {
@@ -281,8 +279,7 @@ public class Window extends JFrame {
 		vitesseMoyenne0Label.setText(VITESSE_MOYENNE0 + mediumSpeedFrom0);
 	}
 
-	public void updateVolumeEssenceDisponible(Object object) {
-		// TODO Auto-generated method stub
-		
+	public void updateVolumeEssenceDisponible(double essenceVolumeDisponible) {
+		volumeDEssenceDisponibleLabel.setText(VOLUME_DISPONIBLE + essenceVolumeDisponible);
 	}
 }

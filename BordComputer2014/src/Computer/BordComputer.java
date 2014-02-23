@@ -3,7 +3,6 @@ package Computer;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import GUI.Window;
-import Temps.TimeWorker;
 
 /**
  * This class is the main class of the project since it stores the main methods
@@ -19,8 +18,6 @@ public class BordComputer implements Runnable {
 
 	private Window mWindow;
 
-	private TimeWorker mTime;
-
 	private double mWheelRadius = 0.38; // Let's suppose that a wheel's radius
 										// is approximatively 38cm
 	private double mInstantaneousSpeed = 0.0; // Stored as meters/second
@@ -31,14 +28,12 @@ public class BordComputer implements Runnable {
 	private double mInstantaneousConsumption = 0.0; // Stored as liters/meter
 	private double mMediumConsumptionRAZ = 0.0;
 	private double mMediumConsumptionFrom0 = 0.0;
-	private double mEssenceVolume = 0.0;
+	private double mEssenceVolumeDisponible = 0.0;
 	private double mAutonomieDisponible = 0.0;
 	private double mDistanceToObjective = 0.0;
 
 	private int mSecondsSinceReset = 0;
 	private int mSecondsSinceLaunch = 0;
-
-	private int mSleepingTime = 500;
 
 	private ArrayBlockingQueue<Update> mEventUpdateQueue;
 
@@ -58,17 +53,38 @@ public class BordComputer implements Runnable {
 	public void computeInstantaneousConsumption(double injection) { // injection
 		// given as
 		// cm3/s
-		System.out.println("injection : " + injection);
-		mInstantaneousConsumption = (mInstantaneousSpeed != 0) ? (injection / 1000.0)
-				/ mInstantaneousSpeed
-				: 0.0;
-		System.out.println("consum : " + mInstantaneousConsumption);
+		if (mEssenceVolumeDisponible < injection) {
+			mInstantaneousConsumption = 0;
+		} else {
+
+			System.out.println("injection : " + injection);
+			mInstantaneousConsumption = (mInstantaneousSpeed != 0) ? (injection / 1000.0)
+					/ mInstantaneousSpeed
+					: 0.0;
+			updateEssenceVolumeDisponible();
+			updateAutonomieDisponible();
+			System.out.println("consum : " + mInstantaneousConsumption);
+		}
 
 		mEventUpdateQueue.add(Update.ConsommationInstantanee);
 		update();
 	}
 
-	public void updateMediumSpeedRAZ() {
+	private void updateEssenceVolumeDisponible() {
+		mEssenceVolumeDisponible -= mInstantaneousConsumption;
+
+		mEventUpdateQueue.add(Update.VolumeEssenceDisponible);
+		update();
+	}
+	
+	private synchronized void updateAutonomieDisponible() {
+		mAutonomieDisponible = (mEssenceVolumeDisponible / mMediumConsumptionFrom0) * mMediumSpeedFrom0;
+		
+		mEventUpdateQueue.add(Update.AutonomieDisponible);
+		update();
+	}
+
+	public void updateMediumSpeed() {
 		// mMediumSpeedRAZ = roundAtTwoDecimals((mMediumSpeedRAZ *
 		// mSecondsSinceLaunch + mInstantaneousSpeed * 0.5)
 		// / (mSecondsSinceLaunch + 0.5));
@@ -79,7 +95,7 @@ public class BordComputer implements Runnable {
 		mMediumSpeedFrom0 = roundAtTwoDecimals((mMediumSpeedFrom0
 				* mSecondsSinceLaunch + mInstantaneousSpeed)
 				/ (mSecondsSinceLaunch + 1));
-
+		
 		mEventUpdateQueue.add(Update.VitesseMoyenne);
 		update();
 	}
@@ -113,8 +129,9 @@ public class BordComputer implements Runnable {
 	 */
 	public void updateSeconds() {
 		updateDistanceCovered();
-		updateMediumSpeedRAZ();
+		updateMediumSpeed();
 		updateMediumConsumption();
+		updateAutonomieDisponible();
 		mSecondsSinceReset++;
 		mSecondsSinceLaunch++;
 	}
@@ -149,10 +166,6 @@ public class BordComputer implements Runnable {
 				+ (mTripDistanceCovered + mDistanceCovered) + " meters");
 	}
 
-	public void setTime(TimeWorker time) {
-		mTime = time;
-	}
-
 	private double roundAtTwoDecimals(double number) {
 		int r = (int) Math.round(number * 100);
 		return r / 100.0;
@@ -181,19 +194,21 @@ public class BordComputer implements Runnable {
 				// TODO:Voir avec Patrick
 				switch (event) {
 				case AutonomieDisponible:
-					mWindow.updateAutonomieDisponible(null);
+					mWindow.updateAutonomieDisponible(mAutonomieDisponible);
 					break;
 				case ConsommationInstantanee:
 					mWindow.updateConsommationInstantanee(mInstantaneousConsumption);
 					break;
 				case ConsommationMoyenne:
-					mWindow.updateConsommationMoyenne(mMediumConsumptionRAZ, mMediumConsumptionFrom0);
+					mWindow.updateConsommationMoyenne(mMediumConsumptionRAZ,
+							mMediumConsumptionFrom0);
 					break;
 				case DistancePrevueParRapportAUnObjectif:
 					mWindow.updateDistanceToObective(mDistanceToObjective);
 					break;
 				case KilometrageParcourus:
-					mWindow.updateKilometrageParcourus(mDistanceCovered, mTripDistanceCovered);
+					mWindow.updateKilometrageParcourus(mDistanceCovered,
+							mTripDistanceCovered);
 					break;
 				case VitesseInstantannee:
 					mWindow.updateVitesseInstantannee(mInstantaneousSpeed);
@@ -203,7 +218,7 @@ public class BordComputer implements Runnable {
 							mMediumSpeedFrom0);
 					break;
 				case VolumeEssenceDisponible:
-					mWindow.updateVolumeEssenceDisponible(null);
+					mWindow.updateVolumeEssenceDisponible(mEssenceVolumeDisponible);
 					break;
 				default:
 					break;
