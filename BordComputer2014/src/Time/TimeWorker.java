@@ -1,4 +1,4 @@
-package Temps;
+package Time;
 
 import Computer.BordComputer;
 import GUI.Window;

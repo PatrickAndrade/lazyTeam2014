@@ -14,7 +14,8 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import Computer.BordComputer;
-import Temps.TimeWorker;
+import Sensor.Sensors;
+import Time.TimeWorker;
 
 /**
  * TODO: Comment this class
@@ -25,8 +26,8 @@ import Temps.TimeWorker;
 public class Window extends JFrame {
 
 	private TimeWorker time;
-	
 	private BordComputer bordComputer;
+	private Sensors sensors;
 	
 	private final String START = "Start";
 	private final String PAUSE = "Pause";
@@ -84,6 +85,7 @@ public class Window extends JFrame {
 	private JLabel vitesseMoyenneRAZLabel;
 
 	private JLabel vitesseInstantanneeLabel;
+
 
 	/**
 	 * Launch the application.
@@ -235,9 +237,11 @@ public class Window extends JFrame {
 		// Code pour lier les composants
 		bordComputer = new BordComputer(this);
 		time = new TimeWorker(bordComputer, this);
+		sensors = new Sensors(bordComputer);
 		
 		new Thread(time).start();
 		new Thread(bordComputer).start();
+		new Thread(sensors).start();
 
 		updateTime();
 	}

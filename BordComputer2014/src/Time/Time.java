@@ -1,4 +1,4 @@
-package Temps;
+package Time;
 
 /**
  * TODO: Comment this class

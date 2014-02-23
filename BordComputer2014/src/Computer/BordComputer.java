@@ -61,7 +61,6 @@ public class BordComputer implements Runnable {
 			mInstantaneousConsumption = (mInstantaneousSpeed != 0) ? (injection / 1000.0)
 					/ mInstantaneousSpeed
 					: 0.0;
-			updateEssenceVolumeDisponible();
 			updateAutonomieDisponible();
 			System.out.println("consum : " + mInstantaneousConsumption);
 		}
@@ -70,8 +69,9 @@ public class BordComputer implements Runnable {
 		update();
 	}
 
-	private void updateEssenceVolumeDisponible() {
-		mEssenceVolumeDisponible -= mInstantaneousConsumption;
+	public void computeEssenceVolumeDisponible(double volume) { //en litre
+		mEssenceVolumeDisponible = volume;
+		updateAutonomieDisponible();
 
 		mEventUpdateQueue.add(Update.VolumeEssenceDisponible);
 		update();
@@ -226,32 +226,4 @@ public class BordComputer implements Runnable {
 			}
 		}
 	}
-
-	// @Override
-	// public void run() {
-	// new Thread(mInternalClock).start();
-	// double hallEffect = 0.0;
-	// double injection = 1;
-	// while (true) {
-	// computeInstantaneousSpeed(hallEffect);
-	// computeInstantaneousConsumption(injection);
-	// printInstantaneousSpeed();
-	// printInstantaneousConsumption();
-	// updateMediumSpeed();
-	// updateDistanceCovered();
-	// printMediumSpeed();
-	// printDistanceCovered();
-	// try {
-	// Thread.sleep(mSleepingTime);
-	// mSecondsSinceLaunch += 0.5;
-	// } catch (InterruptedException e) {
-	// }
-	// hallEffect++;
-	// }
-	// }
-	//
-	// public static void main(String[] args) throws InterruptedException {
-	// BordComputer b = new BordComputer(new TimeWorker(null), null);
-	// new Thread(b).start();
-	// }
 }
