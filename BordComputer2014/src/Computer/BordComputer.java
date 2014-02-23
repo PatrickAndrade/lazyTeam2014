@@ -75,6 +75,10 @@ public class BordComputer implements Runnable {
 		update();
 	}
 	
+	public synchronized void computePosition(double value1, double value2) {
+		mWindow.positionMap(value1, value2);
+	}
+	
 	private synchronized void updateAutonomieDisponible() { // en metre
 		if (mMediumConsumptionFrom0 != 0) {
 			mAutonomieDisponible = (mEssenceVolumeDisponible / mMediumConsumptionFrom0) * mMediumSpeedFrom0;
@@ -207,7 +211,7 @@ public class BordComputer implements Runnable {
 					break;
 				case KilometrageParcourus:
 					mWindow.updateKilometrageParcourus(mDistanceCovered,
-							mTripDistanceCovered);
+							mTripDistanceCovered, mSecondsSinceLaunch);
 					break;
 				case VitesseInstantannee:
 					mWindow.updateVitesseInstantannee(mInstantaneousSpeed);
@@ -217,7 +221,7 @@ public class BordComputer implements Runnable {
 							mMediumSpeedFrom0);
 					break;
 				case VolumeEssenceDisponible:
-					mWindow.updateVolumeEssenceDisponible(mEssenceVolumeDisponible);
+					mWindow.updateVolumeEssenceDisponible(mEssenceVolumeDisponible, mSecondsSinceLaunch);
 					break;
 				default:
 					break;

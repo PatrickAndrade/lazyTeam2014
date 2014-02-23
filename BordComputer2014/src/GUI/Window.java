@@ -295,11 +295,12 @@ public class Window extends JFrame {
 	}
 
 	public void updateKilometrageParcourus(double distanceCovered,
-			double tripDistanceCovered) {
+			double tripDistanceCovered, int secondsSinceLaunch) {
 		kilometrageParcourusRAZLabel.setText(KILOMETRAGE_PARCOURUS_RAZ
 				+ roundAtTwoDecimals(tripDistanceCovered / 1000) + " km");
 		kilometrageParcourus0Label.setText(kILOMETRAGE_PARCOURUS0
 				+ roundAtTwoDecimals(distanceCovered / 1000) + " km");
+		graph.vitesse.add(roundAtTwoDecimals(secondsSinceLaunch / 3600.0), roundAtTwoDecimals(distanceCovered / 1000));
 	}
 
 	public void updateVitesseInstantannee(double instantaneousSpeed) {
@@ -315,13 +316,18 @@ public class Window extends JFrame {
 				+ roundAtTwoDecimals(mediumSpeedFrom0 * 3.6) + " km/h");
 	}
 
-	public void updateVolumeEssenceDisponible(double essenceVolumeDisponible) {
+	public void updateVolumeEssenceDisponible(double essenceVolumeDisponible, int secondsSinceLaunch) {
 		volumeDEssenceDisponibleLabel.setText(VOLUME_DISPONIBLE
 				+ roundAtTwoDecimals(essenceVolumeDisponible) + " litre");
+		graph.consommation.add(secondsSinceLaunch  / 3600.0, roundAtTwoDecimals(essenceVolumeDisponible));
 	}
 
 	private double roundAtTwoDecimals(double number) {
 		int r = (int) Math.round(number * 100);
 		return r / 100.0;
+	}
+
+	public void positionMap(double latitude, double longitude) {
+		graph.map.addPoint(latitude, longitude);
 	}
 }

@@ -31,7 +31,6 @@ public class Graph {
 
 	public XYSeries consommation = new XYSeries("Consommation");
 	public XYSeries vitesse = new XYSeries("Vitesse");
-	public XYSeries altitude = new XYSeries("altitude");
 	public Map map;
 
 	
@@ -57,7 +56,7 @@ public class Graph {
 		        chart2 = ChartFactory.createXYLineChart(
 			            "Vitesse",
 			            "seconde", 
-			            "metre", 
+			            "kilometre", 
 			            graph2Collection,
 			            PlotOrientation.VERTICAL,
 			            true,
