@@ -139,34 +139,11 @@ public class BordComputer implements Runnable {
 		mSecondsSinceLaunch++;
 	}
 
-	public void printInstantaneousConsumption() {
-		System.out
-				.println("Instantanous consumption : "
-						+ roundAtTwoDecimals(mInstantaneousConsumption * 1000.0 * 100.0)
-						+ " l/100km");
-	}
-
-	public void printInstantaneousSpeed() {
-		System.out.println("Instantanous speed : "
-				+ roundAtTwoDecimals(mInstantaneousSpeed * 3.6) + " km/h");
-	}
-
-	public void printMediumSpeed() {
-		System.out.println("Medium speed : " + mMediumSpeedRAZ + " m/s");
-	}
-
-	public void printDistanceCovered() {
-		System.out.println("Distance covered : "
-				+ roundAtTwoDecimals(mDistanceCovered) + " meters");
-	}
-
-	public void resetTripDistanceCovered() {
-		mTripDistanceCovered -= mDistanceCovered;
-	}
-
-	public void printTripDistanceCovered() {
-		System.out.println("Trip-distance covered : "
-				+ (mTripDistanceCovered + mDistanceCovered) + " meters");
+	public synchronized void reset() {
+		mTripDistanceCovered = 0.0;
+		mSecondsSinceReset = 0;
+		mMediumConsumptionRAZ = 0.0;
+		mMediumSpeedRAZ = 0.0;
 	}
 
 	private double roundAtTwoDecimals(double number) {

@@ -172,10 +172,11 @@ public class Window extends JFrame {
 		lapsLabel.setBounds(895, 13, 56, 16);
 		contentPane.add(lapsLabel);
 
-		resetTimeRunsButton = new JButton("Reset time runs");
+		resetTimeRunsButton = new JButton("Reset");
 		resetTimeRunsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				time.resetTimeRuns();
+				bordComputer.reset();
 			}
 		});
 		resetTimeRunsButton.setBounds(630, 129, 156, 25);
@@ -252,7 +253,7 @@ public class Window extends JFrame {
 				graph.showNextGraph();
 			}
 		});
-		btnNextGraph.setBounds(480, 224, 97, 25);
+		btnNextGraph.setBounds(463, 224, 97, 25);
 		contentPane.add(btnNextGraph);
 
 		new Thread(time).start();
