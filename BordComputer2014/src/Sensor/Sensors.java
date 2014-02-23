@@ -19,7 +19,7 @@ public class Sensors implements Runnable {
 	private ArrayBlockingQueue<DataSensor> dataSensorQueue;
 	private BordComputer bordComputer;
 
-	private double injection = 1.0;
+	private double injection = 1.0; // cm3/s
 	
 	public Sensors(BordComputer bordComputer) {
 		this.bordComputer = bordComputer;
@@ -34,7 +34,7 @@ public class Sensors implements Runnable {
 	
 	private synchronized void waitTime() {
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
 	}
@@ -79,7 +79,7 @@ public class Sensors implements Runnable {
 	
 	private class HallSensor implements Runnable {
 
-		private double hallEffect = 0.0;
+		private double hallEffect = 0.0; //rad/s
 
 		public void run() {
 			while (true) {
@@ -104,7 +104,7 @@ public class Sensors implements Runnable {
 
 	private class VolumeSensor implements Runnable {
 
-		private double volume = 45.0;
+		private double volume = 45.0; //liter
 
 		public void run() {
 			while (true) {
@@ -112,7 +112,7 @@ public class Sensors implements Runnable {
 				notifyDataSensorQueueIsNotEmpty();
 				
 				if (volume - injection >= 0) {
-					volume -= injection;
+					volume -= injection / 1000;
 				}
 			}
 		}

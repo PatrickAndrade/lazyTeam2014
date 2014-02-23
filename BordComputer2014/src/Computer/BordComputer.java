@@ -21,16 +21,16 @@ public class BordComputer implements Runnable {
 	private double mWheelRadius = 0.38; // Let's suppose that a wheel's radius
 										// is approximatively 38cm
 	private double mInstantaneousSpeed = 0.0; // Stored as meters/second
-	private double mMediumSpeedRAZ = 0.0;
-	private double mMediumSpeedFrom0 = 0.0;
-	private double mTripDistanceCovered = 0.0;
-	private double mDistanceCovered = 0.0;
-	private double mInstantaneousConsumption = 0.0; // Stored as liters/meter
-	private double mMediumConsumptionRAZ = 0.0;
-	private double mMediumConsumptionFrom0 = 0.0;
-	private double mEssenceVolumeDisponible = 0.0;
-	private double mAutonomieDisponible = 0.0;
-	private double mDistanceToObjective = 0.0;
+	private double mMediumSpeedRAZ = 0.0; // Stored as meters/second
+	private double mMediumSpeedFrom0 = 0.0; // Stored as meters/second
+	private double mTripDistanceCovered = 0.0; // Stored as meter
+	private double mDistanceCovered = 0.0;  // Stored as meter
+	private double mInstantaneousConsumption = 0.0; // Stored as liters/s
+	private double mMediumConsumptionRAZ = 0.0; // Stored as liters/s
+	private double mMediumConsumptionFrom0 = 0.0; // Stored as liters/s
+	private double mEssenceVolumeDisponible = 0.0; // Stored as liter
+	private double mAutonomieDisponible = 0.0; // Stored in meter
+	private double mDistanceToObjective = 100.0 * 1000.0; //Stored as meter
 
 	private int mSecondsSinceReset = 0;
 	private int mSecondsSinceLaunch = 0;
@@ -42,7 +42,7 @@ public class BordComputer implements Runnable {
 		mEventUpdateQueue = new ArrayBlockingQueue<Update>(100);
 	}
 
-	public void computeInstantaneousSpeed(double hallEffect) {
+	public synchronized void computeInstantaneousSpeed(double hallEffect) {
 		// hallEffect given in rad/s
 		mInstantaneousSpeed = hallEffect * mWheelRadius;
 
@@ -50,26 +50,24 @@ public class BordComputer implements Runnable {
 		update();
 	}
 
-	public void computeInstantaneousConsumption(double injection) { // injection
+	public synchronized void computeInstantaneousConsumption(double injection) { // injection
 		// given as
 		// cm3/s
 		if (mEssenceVolumeDisponible < injection) {
 			mInstantaneousConsumption = 0;
 		} else {
 
-			System.out.println("injection : " + injection);
 			mInstantaneousConsumption = (mInstantaneousSpeed != 0) ? (injection / 1000.0)
 					/ mInstantaneousSpeed
 					: 0.0;
 			updateAutonomieDisponible();
-			System.out.println("consum : " + mInstantaneousConsumption);
 		}
 
 		mEventUpdateQueue.add(Update.ConsommationInstantanee);
 		update();
 	}
 
-	public void computeEssenceVolumeDisponible(double volume) { //en litre
+	public synchronized void computeEssenceVolumeDisponible(double volume) { //en litre
 		mEssenceVolumeDisponible = volume;
 		updateAutonomieDisponible();
 
@@ -77,17 +75,16 @@ public class BordComputer implements Runnable {
 		update();
 	}
 	
-	private synchronized void updateAutonomieDisponible() {
-		mAutonomieDisponible = (mEssenceVolumeDisponible / mMediumConsumptionFrom0) * mMediumSpeedFrom0;
+	private synchronized void updateAutonomieDisponible() { // en metre
+		if (mMediumConsumptionFrom0 != 0) {
+			mAutonomieDisponible = (mEssenceVolumeDisponible / mMediumConsumptionFrom0) * mMediumSpeedFrom0;
+		} //(liter / (liter/s)) * m/s = m
 		
 		mEventUpdateQueue.add(Update.AutonomieDisponible);
 		update();
 	}
 
-	public void updateMediumSpeed() {
-		// mMediumSpeedRAZ = roundAtTwoDecimals((mMediumSpeedRAZ *
-		// mSecondsSinceLaunch + mInstantaneousSpeed * 0.5)
-		// / (mSecondsSinceLaunch + 0.5));
+	public synchronized void updateMediumSpeed() {
 		mMediumSpeedRAZ = roundAtTwoDecimals((mMediumSpeedRAZ
 				* mSecondsSinceReset + mInstantaneousSpeed)
 				/ (mSecondsSinceReset + 1));
@@ -100,25 +97,27 @@ public class BordComputer implements Runnable {
 		update();
 	}
 
-	public void updateDistanceCovered() {
-		// mDistanceCovered += mInstantaneousSpeed * mSleepingTime / 1000.0;
+	public synchronized void updateDistanceCovered() {
 		mDistanceCovered += mInstantaneousSpeed;
 		mTripDistanceCovered += mInstantaneousSpeed;
-		mDistanceToObjective -= mInstantaneousSpeed;
+		
+		if (mDistanceToObjective > 0) {
+			mDistanceToObjective -= mInstantaneousSpeed;
+		}
 
 		mEventUpdateQueue.add(Update.KilometrageParcourus);
 		mEventUpdateQueue.add(Update.DistancePrevueParRapportAUnObjectif);
 		update();
 	}
 
-	private void updateMediumConsumption() {
-		mMediumConsumptionRAZ = roundAtTwoDecimals((mMediumConsumptionRAZ
+	private synchronized void updateMediumConsumption() {
+		mMediumConsumptionRAZ = (mMediumConsumptionRAZ
 				* mSecondsSinceReset + mInstantaneousConsumption)
-				/ (mSecondsSinceReset + 1));
+				/ (mSecondsSinceReset + 1);
 
-		mMediumConsumptionFrom0 = roundAtTwoDecimals((mMediumConsumptionFrom0
+		mMediumConsumptionFrom0 = (mMediumConsumptionFrom0
 				* mSecondsSinceLaunch + mInstantaneousConsumption)
-				/ (mSecondsSinceLaunch + 1));
+				/ (mSecondsSinceLaunch + 1);
 
 		mEventUpdateQueue.add(Update.ConsommationMoyenne);
 		update();
