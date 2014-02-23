@@ -62,7 +62,7 @@ public class Window extends JFrame {
 
 	private JTextArea lapTextArea;
 
-	private JButton resetTimeRunsButton;
+	private JButton resetButton;
 	private JScrollPane scrollPane;
 
 	private JLabel distancePrevuParRapportAUnObjectifLabel;
@@ -172,15 +172,15 @@ public class Window extends JFrame {
 		lapsLabel.setBounds(895, 13, 56, 16);
 		contentPane.add(lapsLabel);
 
-		resetTimeRunsButton = new JButton("Reset");
-		resetTimeRunsButton.addActionListener(new ActionListener() {
+		resetButton = new JButton("Reset");
+		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				time.resetTimeRuns();
 				bordComputer.reset();
 			}
 		});
-		resetTimeRunsButton.setBounds(630, 129, 156, 25);
-		contentPane.add(resetTimeRunsButton);
+		resetButton.setBounds(630, 129, 156, 25);
+		contentPane.add(resetButton);
 
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(896, 39, 128, 196);

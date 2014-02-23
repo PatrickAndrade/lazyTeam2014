@@ -11,6 +11,8 @@ import Computer.BordComputer;
 public class Sensors implements Runnable {
 
 	private BordComputer bordComputer;
+	private double wheelRadius = 0.38; // Let's suppose that a wheel's radius
+										// is approximatively 38cm
 
 	public Sensors(BordComputer bordComputer) {
 		this.bordComputer = bordComputer;
@@ -23,42 +25,63 @@ public class Sensors implements Runnable {
 		}
 	}
 
-	public void run() {	
-		
-		int hallEffect = 0;
+	public void run() {
+
 		double injection = 1.0;
 		double volume = 45.0;
 		int latIndex = 0;
 		int longIndex = 0;
-		
-		while(true) {
-			
-			//Hall effect
-			bordComputer.computeInstantaneousSpeed(hallEffect);
-			hallEffect++;
-			
-			//injection
-			bordComputer.computeInstantaneousConsumption(injection);
-			
-			//volume:
-			bordComputer.computeEssenceVolumeDisponible(volume);
-			
-			if (volume - injection >= 0) {
-				volume -= injection / 1000;
-			}
+		double speed = 0.0;
 
-			//position:
-			if ((latIndex >= latitude.length) || (longIndex >= longitude.length)) {
+		while (true) {
+
+			// position:
+			if ((latIndex >= latitude.length)
+					|| (longIndex >= longitude.length)) {
 				latIndex = 0;
 				longIndex = 0;
 			}
 			
-			bordComputer.computePosition(latitude[latIndex], longitude[longIndex]);
+			if ((latIndex + 1 < latitude.length)
+					|| (longIndex + 1 < longitude.length)) {
+				speed = latitudeLongitudeToDistance(latitude[latIndex], longitude[longIndex], latitude[latIndex + 1], longitude[longIndex + 1]);
+			}
+
+			bordComputer.computePosition(latitude[latIndex],
+					longitude[longIndex]);
+			
 			latIndex++;
 			longIndex++;
-			
+
+			// Hall effect
+			bordComputer.computeInstantaneousSpeed(speed / wheelRadius);
+
+			// injection
+			bordComputer.computeInstantaneousConsumption(injection);
+
+			// volume:
+			bordComputer.computeEssenceVolumeDisponible(volume);
+
+			if (volume - injection >= 0) {
+				volume -= injection / 1000;
+			}
+
 			waitOneSecond();
 		}
+	}
+	
+	private double latitudeLongitudeToDistance(double lastLatitude, double lastLongitude, double latitude, double longitude) {
+		double R = 6371 * 1000; //rayon de la Terre
+		
+		double dLat = Math.toRadians(latitude - lastLatitude);
+		double dLon = Math.toRadians(longitude - lastLongitude);
+		double lat1 = Math.toRadians(lastLatitude);
+		double lat2 = Math.toRadians(latitude);
+
+		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		        Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		return R * c;
 	}
 
 	double latitude[] = { 46.326548, 46.326549, 46.32656, 46.326603, 46.326695,
