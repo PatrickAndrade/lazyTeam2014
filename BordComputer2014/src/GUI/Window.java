@@ -1,9 +1,14 @@
 package GUI;
 
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,6 +20,8 @@ import javax.swing.border.EmptyBorder;
 import Computer.BordComputer;
 import Sensor.Sensors;
 import Time.TimeWorker;
+
+import javax.swing.ImageIcon;
 
 /**
  * This is the main class that show the GUI and link each component
@@ -87,6 +94,7 @@ public class Window extends JFrame {
 
 	private JLabel vitesseInstantanneeLabel;
 	private JPanel graphPanel;
+	private JPanel imagePanel;
 
 	/**
 	 * Launch the application.
@@ -255,6 +263,18 @@ public class Window extends JFrame {
 		});
 		btnNextGraph.setBounds(463, 224, 97, 25);
 		contentPane.add(btnNextGraph);
+		
+		imagePanel = new JPanel() {
+			@Override
+			public void paint(Graphics g) {
+				try {
+					g.drawImage(ImageIO.read(new File("image.jpg")), 0, 0, null);
+				} catch (IOException e) {
+				}
+			}
+		};
+		imagePanel.setBounds(440, 13, 178, 198);
+		contentPane.add(imagePanel);
 
 		new Thread(time).start();
 		new Thread(bordComputer).start();

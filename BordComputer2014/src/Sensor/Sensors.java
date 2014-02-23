@@ -78,6 +78,7 @@ public class Sensors implements Runnable {
 		double lat1 = Math.toRadians(lastLatitude);
 		double lat2 = Math.toRadians(latitude);
 
+		//Haversine formula
 		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
 		        Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
