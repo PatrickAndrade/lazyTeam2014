@@ -40,9 +40,9 @@ public class Sensors implements Runnable {
                 longIndex = 0;
             }
 
-            if ((latIndex + 1 < Latitude.values.length) || (longIndex + 1 < Longitude.values.length)) {
-                speed = latitudeLongitudeToDistance(Latitude.values[latIndex], Longitude.values[longIndex], Latitude.values[latIndex + 1],
-                        Longitude.values[longIndex + 1]);
+            if ((latIndex + 3 < Latitude.values.length) || (longIndex + 3 < Longitude.values.length)) {
+                speed = latitudeLongitudeToDistance(Latitude.values[latIndex], Longitude.values[longIndex], Latitude.values[latIndex + 3],
+                        Longitude.values[longIndex + 3])/3.0;
             }
 
             bordComputer.computePosition(Latitude.values[latIndex], Longitude.values[longIndex]);
