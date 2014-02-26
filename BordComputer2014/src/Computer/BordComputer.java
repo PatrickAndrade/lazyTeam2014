@@ -13,7 +13,7 @@ import GUI.Window;
 public class BordComputer implements Runnable {
 
 	enum Update {
-		VitesseInstantannee, VitesseMoyenne, KilometrageParcourus, ConsommationInstantanee, ConsommationMoyenne, VolumeEssenceDisponible, AutonomieDisponible, DistancePrevueParRapportAUnObjectif
+		VitesseInstantannee, VitesseMoyenne, KilometrageParcourus, ConsommationInstantanee, ConsommationMoyenne, VolumeEssenceDisponible, AutonomieDisponible, DistancePrevueParRapportAUnObjectif, Position
 	}
 
 	private Window mWindow;
@@ -31,6 +31,8 @@ public class BordComputer implements Runnable {
 	private double mEssenceVolumeDisponible = 0.0; // Stored as liter
 	private double mAutonomieDisponible = 0.0; // Stored in meter
 	private double mDistanceToObjective = 100.0 * 1000.0; //Stored as meter
+	private double mLatitude = 0.0;
+	private double mLongitude = 0.0;
 
 	private int mSecondsSinceReset = 0;
 	private int mSecondsSinceLaunch = 0;
@@ -76,7 +78,10 @@ public class BordComputer implements Runnable {
 	}
 	
 	public synchronized void computePosition(double value1, double value2) {
-		mWindow.positionMap(value1, value2);
+		mLatitude = value1;
+		mLongitude = value2;
+		mEventUpdateQueue.add(Update.Position);
+		update();
 	}
 	
 	private synchronized void updateAutonomieDisponible() { // en metre
@@ -200,6 +205,9 @@ public class BordComputer implements Runnable {
 				case VolumeEssenceDisponible:
 					mWindow.updateVolumeEssenceDisponible(mEssenceVolumeDisponible, mSecondsSinceLaunch);
 					break;
+				case Position:
+			        mWindow.positionMap(mLatitude, mLongitude);
+			        break;
 				default:
 					break;
 				}
