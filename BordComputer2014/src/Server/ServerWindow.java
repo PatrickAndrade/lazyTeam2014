@@ -1,12 +1,15 @@
 package Server;
 
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -20,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 public class ServerWindow extends JFrame {
 
 	private JPanel contentPane;
+	private JPanel imagePanel;
 	private Graph graph;
 
 	/**
@@ -43,15 +47,28 @@ public class ServerWindow extends JFrame {
 	 */
 	public ServerWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1166, 706);
+		setBounds(100, 100, 1016, 551);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
 		JPanel graphPanel = new JPanel();
-		graphPanel.setBounds(144, 75, 831, 513);
+		graphPanel.setBounds(0, 0, 831, 513);
 		contentPane.add(graphPanel);
+		
+		imagePanel = new JPanel() {
+			@Override
+			public void paint(Graphics g) {
+				try {
+					g.drawImage(ImageIO.read(new File("image.jpg")), 0, 0, null);
+				} catch (IOException e) {
+				}
+			}
+		};
+		
+		imagePanel.setBounds(829, 0, 178, 198);
+		contentPane.add(imagePanel);
 
 		// Code
 		graph = new Graph(graphPanel);

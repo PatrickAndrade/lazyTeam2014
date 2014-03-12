@@ -276,6 +276,7 @@ public class Window extends JFrame {
 				}
 			}
 		};
+		
 		imagePanel.setBounds(440, 13, 178, 198);
 		contentPane.add(imagePanel);
 		
