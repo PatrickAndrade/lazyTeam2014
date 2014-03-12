@@ -58,6 +58,7 @@ public class ServerWindow extends JFrame {
 		contentPane.add(graphPanel);
 		
 		imagePanel = new JPanel() {
+			
 			@Override
 			public void paint(Graphics g) {
 				try {
