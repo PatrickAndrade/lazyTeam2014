@@ -1,7 +1,6 @@
 package Server;
 
 import java.awt.EventQueue;
-import java.awt.image.BufferedImageFilter;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -110,10 +109,7 @@ class Connection implements Runnable {
 			
 			while (true) {
 				double latitude = inputStream.readDouble();
-				double longitude = inputStream.readDouble();
-				
-				System.out.println(latitude + " - " + longitude);
-				
+				double longitude = inputStream.readDouble();				
 				graph.map.addPoint(socket, latitude, longitude);
 			}
 		} catch (IOException e) {

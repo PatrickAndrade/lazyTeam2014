@@ -279,12 +279,7 @@ public class Window extends JFrame {
 		imagePanel.setBounds(440, 13, 178, 198);
 		contentPane.add(imagePanel);
 		
-		try {
-			socket = new Socket("127.0.0.1", 6464);
-			outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-		} catch (IOException e1) {
-			System.err.println("Can't connect to server!");
-		}
+		tryConnect();
 
 		new Thread(time).start();
 		new Thread(bordComputer).start();
@@ -365,7 +360,21 @@ public class Window extends JFrame {
 		sendToServerPosition(latitude, longitude);
 	}
 	
+	private final int MAX_COUNTER_TRY_CONNECT = 30;
+	private int counterTryConnect = 0;
+	
+	public void tryConnect() {
+		try {
+			socket = new Socket("127.0.0.1", 6464);
+			outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			System.out.println("Connected");
+		} catch (IOException e1) {
+			System.err.println("Can't connect to server!");
+		}
+	}
+	
 	public void sendToServerPosition(double latitude, double longitude) {
+		
 		if (socket != null) {
 			try {
 				outputStream.writeDouble(latitude);
@@ -381,7 +390,15 @@ public class Window extends JFrame {
 				
 				outputStream = null;
 				socket = null;
+				counterTryConnect = 0;
 			}
+			
+			
+		} else if (counterTryConnect > MAX_COUNTER_TRY_CONNECT) {
+			tryConnect();
+			counterTryConnect = 0;
+		} else {
+			counterTryConnect++;
 		}
 	}
 }
