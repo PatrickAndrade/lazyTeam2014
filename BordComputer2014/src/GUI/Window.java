@@ -2,11 +2,14 @@ package GUI;
 
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -21,8 +24,6 @@ import Computer.BordComputer;
 import Sensor.Sensors;
 import Time.TimeWorker;
 
-import javax.swing.ImageIcon;
-
 /**
  * This is the main class that show the GUI and link each component
  * 
@@ -36,6 +37,8 @@ public class Window extends JFrame {
 	private BordComputer bordComputer;
 	private Sensors sensors;
 	private Graph graph;
+	private Socket socket = null;
+	private DataOutputStream outputStream = null;
 
 	private final String START = "Start";
 	private final String PAUSE = "Pause";
@@ -275,6 +278,13 @@ public class Window extends JFrame {
 		};
 		imagePanel.setBounds(440, 13, 178, 198);
 		contentPane.add(imagePanel);
+		
+		try {
+			socket = new Socket("127.0.0.1", 6464);
+			outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+		} catch (IOException e1) {
+			System.err.println("Can't connect to server!");
+		}
 
 		new Thread(time).start();
 		new Thread(bordComputer).start();
@@ -352,5 +362,26 @@ public class Window extends JFrame {
 	public void positionMap(double latitude, double longitude) {
 		graph.map.clear();
 		graph.map.addPoint(latitude, longitude);
+		sendToServerPosition(latitude, longitude);
+	}
+	
+	public void sendToServerPosition(double latitude, double longitude) {
+		if (socket != null) {
+			try {
+				outputStream.writeDouble(latitude);
+				outputStream.writeDouble(longitude);
+				outputStream.flush();
+			} catch (IOException e) {
+				System.err.println("Disconnected");
+				try {
+					outputStream.close();
+					socket.close();
+				} catch (IOException e1) {
+				}
+				
+				outputStream = null;
+				socket = null;
+			}
+		}
 	}
 }
