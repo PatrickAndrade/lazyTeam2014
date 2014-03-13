@@ -302,19 +302,19 @@ public class Window extends JFrame {
 
 	public void updateConsommationInstantanee(double instantaneousConsumption) {
 		consommationInstantanneeLabel.setText(CONSOMMATION_INSTANTANNEE
-				+ roundAtTwoDecimals(instantaneousConsumption * 3600)
-				+ " l/heure");
+				+ roundAtTwoDecimals(instantaneousConsumption * 100 * 1000)
+				+ " l/100km");
 	}
 
 	public void updateConsommationMoyenne(double mediumConsumptionRAZ,
 			double mediumConsumptionFrom0) {
 		consommationMoyenneRAZLabel.setText(CONSOMMATION_MOYENNE_RAZ
-				+ roundAtTwoDecimals(mediumConsumptionRAZ * 3600)
-				+ " l/heure");
+				+ roundAtTwoDecimals(mediumConsumptionRAZ * 100 * 1000)
+				+ " l/100km");
 		
 		consommationMoyenne0Label.setText(CONSOMMATION_MOYENNE0
-				+ roundAtTwoDecimals(mediumConsumptionFrom0 * 3600)
-				+ " l/heure");
+				+ roundAtTwoDecimals(mediumConsumptionFrom0 * 100 * 1000)
+				+ " l/100km");
 	}
 
 	public void updateDistanceToObective(double distanceToObjective) {
@@ -358,7 +358,7 @@ public class Window extends JFrame {
 	public void positionMap(double latitude, double longitude) {
 		graph.map.clear();
 		graph.map.addPoint(latitude, longitude);
-		sendToServerPosition(latitude, longitude);
+		//sendToServerPosition(latitude, longitude);
 	}
 	
 	private final int MAX_COUNTER_TRY_CONNECT = 30;

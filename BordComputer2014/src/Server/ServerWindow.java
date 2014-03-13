@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -82,6 +84,8 @@ public class ServerWindow extends JFrame {
 class Server implements Runnable {
 
 	private Graph graph;
+	private ExecutorService threadPool = Executors
+			.newFixedThreadPool(30);
 
 	public Server(Graph graph) {
 		this.graph = graph;
@@ -100,7 +104,7 @@ class Server implements Runnable {
 		while (server != null) {
 			try {
 				Socket socket = server.accept();
-				new Thread(new Connection(graph, socket)).start();
+				threadPool.execute(new Connection(graph, socket));
 			} catch (IOException e) {
 			}
 		}

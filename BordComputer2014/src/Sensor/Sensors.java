@@ -19,14 +19,14 @@ public class Sensors implements Runnable {
 
     private void waitOneSecond() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(10);
         } catch (InterruptedException e) {
         }
     }
 
     public void run() {
 
-        double injection = 1.0;
+        double injection = 2.0;
         double volume = 45.0;
         int latIndex = 0;
         int longIndex = 0;

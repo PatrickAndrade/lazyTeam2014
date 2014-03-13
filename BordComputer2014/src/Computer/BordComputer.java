@@ -20,23 +20,24 @@ public class BordComputer implements Runnable {
 
 	private double mWheelRadius = 0.38; // Let's suppose that a wheel's radius
 										// is approximatively 38cm
-	private double mInstantaneousSpeed = 0.0; // Stored as meters/second
-	private double mMediumSpeedRAZ = 0.0; // Stored as meters/second
-	private double mMediumSpeedFrom0 = 0.0; // Stored as meters/second
-	private double mTripDistanceCovered = 0.0; // Stored as meter
-	private double mDistanceCovered = 0.0;  // Stored as meter
-	private double mInstantaneousConsumption = 0.0; // Stored as liters/s
-	private double mMediumConsumptionRAZ = 0.0; // Stored as liters/s
-	private double mMediumConsumptionFrom0 = 0.0; // Stored as liters/s
-	private double mEssenceVolumeDisponible = 0.0; // Stored as liter
+	private double mInstantaneousSpeed = 0.0; // Stored as meters/second//
+	private double mMediumSpeedRAZ = 0.0; // Stored as meters/second//
+	private double mMediumSpeedFrom0 = 0.0; // Stored as meters/second//
+	private double mTripDistanceCovered = 0.0; // Stored as meter//
+	private double mDistanceCovered = 0.0;  // Stored as meter//
+	private double mInstantaneousConsumption = 0.0; // Stored as liters/m//
+	private double mMediumConsumptionRAZ = 0.0; // Stored as liters/m//
+	private double mMediumConsumptionFrom0 = 0.0; // Stored as liters/m//
+	private double mEssenceVolumeDisponible = 0.0; // Stored as liter//
 	private double mAutonomieDisponible = 0.0; // Stored in meter
-	private double mDistanceToObjective = 100.0 * 1000.0; //Stored as meter
+	private double mDistanceToObjective = 100.0 * 1000.0; //Stored as meter//
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
 
 	private int mSecondsSinceReset = 0;
 	private int mSecondsSinceLaunch = 0;
 
+	private static final double M_DELTA = 0.5;
 	private ConcurrentLinkedQueue<Update> mEventUpdateQueue;
 
 	public BordComputer(Window window) {
@@ -59,10 +60,10 @@ public class BordComputer implements Runnable {
 			mInstantaneousConsumption = 0;
 		} else {
 
-			mInstantaneousConsumption = (mInstantaneousSpeed != 0) ? (injection / 1000.0)
+			mInstantaneousConsumption = (Math.abs(mInstantaneousSpeed - M_DELTA) > 0) ? (injection / 1000.0)
 					/ mInstantaneousSpeed
 					: 0.0;
-			updateAutonomieDisponible();
+			//= (liter /s) / (m / s)
 		}
 
 		mEventUpdateQueue.add(Update.ConsommationInstantanee);
@@ -71,7 +72,6 @@ public class BordComputer implements Runnable {
 
 	public synchronized void computeEssenceVolumeDisponible(double volume) { //en litre
 		mEssenceVolumeDisponible = volume;
-		updateAutonomieDisponible();
 
 		mEventUpdateQueue.add(Update.VolumeEssenceDisponible);
 		update();
@@ -85,9 +85,9 @@ public class BordComputer implements Runnable {
 	}
 	
 	private synchronized void updateAutonomieDisponible() { // en metre
-		if (mMediumConsumptionFrom0 != 0) {
-			mAutonomieDisponible = (mEssenceVolumeDisponible / mMediumConsumptionFrom0) * mMediumSpeedFrom0;
-		} //(liter / (liter/s)) * m/s = m
+		if (mInstantaneousConsumption != 0) {
+			mAutonomieDisponible = (mEssenceVolumeDisponible / mInstantaneousConsumption);
+		} 
 		
 		mEventUpdateQueue.add(Update.AutonomieDisponible);
 		update();
