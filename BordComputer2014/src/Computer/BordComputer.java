@@ -29,15 +29,14 @@ public class BordComputer implements Runnable {
 	private double mMediumConsumptionRAZ = 0.0; // Stored as liters/m//
 	private double mMediumConsumptionFrom0 = 0.0; // Stored as liters/m//
 	private double mEssenceVolumeDisponible = 0.0; // Stored as liter//
-	private double mAutonomieDisponible = 0.0; // Stored in meter
-	private double mDistanceToObjective = 100.0 * 1000.0; //Stored as meter//
+	private double mAutonomieDisponible = 0.0; // Stored in meter//
+	private double mDistanceToObjective = 160.0 * 1000.0; //Stored as meter//
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
 
 	private int mSecondsSinceReset = 0;
 	private int mSecondsSinceLaunch = 0;
 
-	private static final double M_DELTA = 0.5;
 	private ConcurrentLinkedQueue<Update> mEventUpdateQueue;
 
 	public BordComputer(Window window) {
@@ -60,9 +59,11 @@ public class BordComputer implements Runnable {
 			mInstantaneousConsumption = 0;
 		} else {
 
-			mInstantaneousConsumption = (Math.abs(mInstantaneousSpeed - M_DELTA) > 0) ? (injection / 1000.0)
+			mInstantaneousConsumption = (mInstantaneousSpeed != 0) ? (injection / 1000.0)
 					/ mInstantaneousSpeed
 					: 0.0;
+			mInstantaneousConsumption = (mInstantaneousConsumption < 0.001) ? mInstantaneousConsumption : 0.0;
+			
 			//= (liter /s) / (m / s)
 		}
 
