@@ -9,16 +9,16 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import Computer.BordComputer;
 import Sensor.Sensors;
@@ -48,56 +48,43 @@ public class Window extends JFrame {
 	private final String VITESSE_MOYENNE_RAZ = "Vitesse moyenne (RAZ): ";
 	private final String DISTANCE_TO_OBJECTIVE = "Distance pr\u00E9vu par rapport \u00E0 un objectif: ";
 	private final String KILOMETRAGE_PARCOURUS_RAZ = "Kilometrage parcourus (RAZ): ";
-	private final String kILOMETRAGE_PARCOURUS0 = "Kilometrage parcourus (de 0): ";
+	private final String KILOMETRAGE_PARCOURUS0 = "Kilometrage parcourus (de 0): ";
 	private final String CONSOMMATION_MOYENNE0 = "Consommation moyenne (de 0): ";
 	private final String CONSOMMATION_MOYENNE_RAZ = "Consommation moyenne (RAZ): ";
 	private final String VOLUME_DISPONIBLE = "Volume d'essence disponible: ";
 	private final String AUTONOMIE_DISPONIBLE = "Autonomie disponible: ";
+	private final String TIME = "Date: ";
+	private final String CHRONOMETER = "Chronometre: ";
+	private final String TIME_RUNS = "Time runs: ";
 
 	private JPanel contentPane;
-
-	private JLabel timeRunsLabel;
 
 	private JButton startPauseChronometerButton;
 
 	private JButton stopChronometerButton;
 
-	private JLabel chronometerLabel;
-
 	private JButton lapButton;
-
-	private JLabel timeLabel;
-
-	private JLabel lapsLabel;
-
-	private JTextArea lapTextArea;
 
 	private JButton resetButton;
 	private JScrollPane scrollPane;
-
-	private JLabel distancePrevuParRapportAUnObjectifLabel;
-
-	private JLabel autonomieDisponibleLabel;
-
-	private JLabel volumeDEssenceDisponibleLabel;
-
-	private JLabel consommationMoyenne0Label;
-
-	private JLabel consommationMoyenneRAZLabel;
-
-	private JLabel consommationInstantanneeLabel;
-
-	private JLabel kilometrageParcourus0Label;
-
-	private JLabel kilometrageParcourusRAZLabel;
-
-	private JLabel vitesseMoyenne0Label;
-
-	private JLabel vitesseMoyenneRAZLabel;
-
-	private JLabel vitesseInstantanneeLabel;
 	private JPanel graphPanel;
-	private JPanel imagePanel;
+	private DefaultTableModel lapModelTable;
+	private Vector<String> lapTableName;
+
+	private DefaultTableModel carDataModel;
+	private String[] carDataColumnName = { "Name", "Value" };
+	private String[][] carDataInitialisation = { { VITESSE_INSTANTANNEE, "" },
+			{ VITESSE_MOYENNE_RAZ, "" }, { VITESSE_MOYENNE0, "" },
+			{ KILOMETRAGE_PARCOURUS_RAZ, "" }, { KILOMETRAGE_PARCOURUS0, "" },
+			{ CONSOMMATION_INSTANTANNEE, "" },
+			{ CONSOMMATION_MOYENNE_RAZ, "" }, { CONSOMMATION_MOYENNE0, "" },
+			{ VOLUME_DISPONIBLE, "" }, { AUTONOMIE_DISPONIBLE, "" },
+			{ DISTANCE_TO_OBJECTIVE, "" } };
+
+	private DefaultTableModel timeDataModel;
+	private String[] timeColumnName = { "Name", "Value" };
+	private String[][] timeDataInitialisation = { { TIME, "" },
+			{ CHRONOMETER, "" }, { TIME_RUNS, "" } };
 
 	/**
 	 * Launch the application.
@@ -119,16 +106,13 @@ public class Window extends JFrame {
 	 * Create the frame.
 	 */
 	public Window() {
+		setTitle("Projet - Electronique III");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1054, 701);
+		setBounds(100, 100, 903, 752);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
-		timeLabel = new JLabel("Time: ");
-		timeLabel.setBounds(630, 13, 244, 16);
-		contentPane.add(timeLabel);
 
 		startPauseChronometerButton = new JButton("Start");
 		startPauseChronometerButton.addActionListener(new ActionListener() {
@@ -140,7 +124,7 @@ public class Window extends JFrame {
 
 					// restart le lap si stop avant
 					if (time.getLastLap().equals("")) {
-						lapTextArea.setText("");
+						lapModelTable.getDataVector().removeAllElements();
 					}
 				} else if (startPauseChronometerButton.getText().equals(PAUSE)) {
 					startPauseChronometerButton.setText(START);
@@ -148,7 +132,7 @@ public class Window extends JFrame {
 				}
 			}
 		});
-		startPauseChronometerButton.setBounds(632, 91, 71, 25);
+		startPauseChronometerButton.setBounds(725, 356, 154, 25);
 		contentPane.add(startPauseChronometerButton);
 
 		stopChronometerButton = new JButton("Stop");
@@ -158,30 +142,26 @@ public class Window extends JFrame {
 				startPauseChronometerButton.setText(START);
 			}
 		});
-		stopChronometerButton.setBounds(715, 91, 71, 25);
+		stopChronometerButton.setBounds(725, 394, 156, 25);
 		contentPane.add(stopChronometerButton);
-
-		chronometerLabel = new JLabel("Chronometer: ");
-		chronometerLabel.setBounds(630, 31, 190, 16);
-		contentPane.add(chronometerLabel);
 
 		lapButton = new JButton("Lap");
 		lapButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				time.lapChronometer();
-				lapTextArea.append("\n" + time.getLastLap());
+				if (time.lapChronometer()) {
+					Vector<String> lap = new Vector<String>();
+					lap.add(time.getLastLap());
+					lapModelTable.getDataVector().add(lap);
+					lapModelTable.fireTableDataChanged();
+				}
 			}
 		});
-		lapButton.setBounds(798, 91, 71, 25);
+
+		/*
+		 * time.lapChronometer(); lapTextArea.append("\n" + time.getLastLap());
+		 */
+		lapButton.setBounds(725, 432, 156, 25);
 		contentPane.add(lapButton);
-
-		timeRunsLabel = new JLabel("Time runs: ");
-		timeRunsLabel.setBounds(630, 49, 135, 16);
-		contentPane.add(timeRunsLabel);
-
-		lapsLabel = new JLabel("Laps:");
-		lapsLabel.setBounds(895, 13, 56, 16);
-		contentPane.add(lapsLabel);
 
 		resetButton = new JButton("Reset");
 		resetButton.addActionListener(new ActionListener() {
@@ -190,66 +170,22 @@ public class Window extends JFrame {
 				bordComputer.reset();
 			}
 		});
-		resetButton.setBounds(630, 129, 156, 25);
+		resetButton.setBounds(725, 470, 156, 25);
 		contentPane.add(resetButton);
 
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(896, 39, 128, 196);
+		scrollPane.setBounds(725, 97, 154, 208);
 		contentPane.add(scrollPane);
 
-		lapTextArea = new JTextArea();
-		scrollPane.setViewportView(lapTextArea);
-		lapTextArea.setLineWrap(true);
-		lapTextArea.setWrapStyleWord(true);
-		lapTextArea.setEditable(false);
+		lapModelTable = new DefaultTableModel();
+		lapTableName = new Vector<String>();
+		lapTableName.add("Lap");
+		lapModelTable.setColumnIdentifiers(lapTableName);
+		lapTable = new JTable(lapModelTable);
+		scrollPane.setViewportView(lapTable);
 
-		vitesseInstantanneeLabel = new JLabel(VITESSE_INSTANTANNEE);
-		vitesseInstantanneeLabel.setBounds(12, 13, 352, 16);
-		contentPane.add(vitesseInstantanneeLabel);
-
-		vitesseMoyenneRAZLabel = new JLabel(VITESSE_MOYENNE_RAZ);
-		vitesseMoyenneRAZLabel.setBounds(12, 31, 391, 16);
-		contentPane.add(vitesseMoyenneRAZLabel);
-
-		vitesseMoyenne0Label = new JLabel(VITESSE_MOYENNE0);
-		vitesseMoyenne0Label.setBounds(12, 49, 406, 16);
-		contentPane.add(vitesseMoyenne0Label);
-
-		kilometrageParcourusRAZLabel = new JLabel(KILOMETRAGE_PARCOURUS_RAZ);
-		kilometrageParcourusRAZLabel.setBounds(12, 69, 364, 16);
-		contentPane.add(kilometrageParcourusRAZLabel);
-
-		kilometrageParcourus0Label = new JLabel(kILOMETRAGE_PARCOURUS0);
-		kilometrageParcourus0Label.setBounds(12, 91, 422, 16);
-		contentPane.add(kilometrageParcourus0Label);
-
-		consommationInstantanneeLabel = new JLabel(CONSOMMATION_INSTANTANNEE);
-		consommationInstantanneeLabel.setBounds(12, 116, 391, 16);
-		contentPane.add(consommationInstantanneeLabel);
-
-		consommationMoyenneRAZLabel = new JLabel(CONSOMMATION_MOYENNE_RAZ);
-		consommationMoyenneRAZLabel.setBounds(12, 138, 378, 16);
-		contentPane.add(consommationMoyenneRAZLabel);
-
-		consommationMoyenne0Label = new JLabel(CONSOMMATION_MOYENNE0);
-		consommationMoyenne0Label.setBounds(12, 159, 352, 16);
-		contentPane.add(consommationMoyenne0Label);
-
-		volumeDEssenceDisponibleLabel = new JLabel(VOLUME_DISPONIBLE);
-		volumeDEssenceDisponibleLabel.setBounds(12, 181, 352, 16);
-		contentPane.add(volumeDEssenceDisponibleLabel);
-
-		autonomieDisponibleLabel = new JLabel(AUTONOMIE_DISPONIBLE);
-		autonomieDisponibleLabel.setBounds(12, 201, 334, 16);
-		contentPane.add(autonomieDisponibleLabel);
-
-		distancePrevuParRapportAUnObjectifLabel = new JLabel(
-				DISTANCE_TO_OBJECTIVE);
-		distancePrevuParRapportAUnObjectifLabel.setBounds(12, 219, 391, 16);
-		contentPane.add(distancePrevuParRapportAUnObjectifLabel);
-		
 		graphPanel = new JPanel();
-		graphPanel.setBounds(12, 262, 1012, 379);
+		graphPanel.setBounds(12, 248, 701, 448);
 		contentPane.add(graphPanel);
 
 		// Code pour lier les composants
@@ -257,17 +193,36 @@ public class Window extends JFrame {
 		time = new TimeWorker(bordComputer, this);
 		sensors = new Sensors(bordComputer);
 		graph = new Graph(graphPanel);
-		
+
 		JButton btnNextGraph = new JButton("Next Graph");
 		btnNextGraph.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				graph.showNextGraph();
 			}
 		});
-		btnNextGraph.setBounds(463, 224, 97, 25);
+		btnNextGraph.setBounds(725, 318, 154, 25);
 		contentPane.add(btnNextGraph);
-		
-		imagePanel = new JPanel() {
+
+		JScrollPane carDataScrollPane = new JScrollPane();
+		carDataScrollPane.setBounds(12, 13, 470, 199);
+		contentPane.add(carDataScrollPane);
+
+		carDataModel = new DefaultTableModel(carDataInitialisation,
+				carDataColumnName);
+		carDataTable = new JTable(carDataModel);
+		carDataTable.setEnabled(false);
+		carDataScrollPane.setViewportView(carDataTable);
+
+		timeScrollPane = new JScrollPane();
+		timeScrollPane.setBounds(494, 13, 338, 71);
+		contentPane.add(timeScrollPane);
+
+		timeDataModel = new DefaultTableModel(timeDataInitialisation,
+				timeColumnName);
+		timeTable = new JTable(timeDataModel);
+		timeScrollPane.setViewportView(timeTable);
+
+		JPanel imagePanel = new JPanel() {
 			@Override
 			public void paint(Graphics g) {
 				try {
@@ -276,10 +231,9 @@ public class Window extends JFrame {
 				}
 			}
 		};
-		
-		imagePanel.setBounds(440, 13, 178, 198);
+		imagePanel.setBounds(725, 508, 156, 184);
 		contentPane.add(imagePanel);
-		
+
 		tryConnect();
 
 		new Thread(time).start();
@@ -290,64 +244,75 @@ public class Window extends JFrame {
 	}
 
 	public synchronized void updateTime() {
-		timeLabel.setText("Time: " + time.getTime());
-		chronometerLabel.setText("Chronometer: " + time.getChronometer());
-		timeRunsLabel.setText("Time runs : " + time.getTimeRuns());
+
+		timeDataModel.setValueAt(time.getTime(), 0, 1);
+		timeDataModel.setValueAt(time.getChronometer(), 1, 1);
+		timeDataModel.setValueAt(time.getTimeRuns(), 2, 1);
+		timeDataModel.fireTableDataChanged();
 	}
 
 	public void updateAutonomieDisponible(double autonomieDisponible) {
-		autonomieDisponibleLabel.setText(AUTONOMIE_DISPONIBLE
-				+ roundAtTwoDecimals(autonomieDisponible / 1000) + " km");
+		String data = roundAtTwoDecimals(autonomieDisponible / 1000) + " km";
+		updateData(data, 9);
 	}
 
 	public void updateConsommationInstantanee(double instantaneousConsumption) {
-		consommationInstantanneeLabel.setText(CONSOMMATION_INSTANTANNEE
-				+ roundAtTwoDecimals(instantaneousConsumption * 100 * 1000)
-				+ " l/100km");
+		String data = roundAtTwoDecimals(instantaneousConsumption * 100 * 1000)
+				+ " l/100km";
+		updateData(data, 5);
 	}
 
 	public void updateConsommationMoyenne(double mediumConsumptionRAZ,
 			double mediumConsumptionFrom0) {
-		consommationMoyenneRAZLabel.setText(CONSOMMATION_MOYENNE_RAZ
-				+ roundAtTwoDecimals(mediumConsumptionRAZ * 100 * 1000)
-				+ " l/100km");
-		
-		consommationMoyenne0Label.setText(CONSOMMATION_MOYENNE0
-				+ roundAtTwoDecimals(mediumConsumptionFrom0 * 100 * 1000)
-				+ " l/100km");
+		String data = roundAtTwoDecimals(mediumConsumptionRAZ * 100 * 1000)
+				+ " l/100km";
+		updateData(data, 6);
+
+		data = roundAtTwoDecimals(mediumConsumptionFrom0 * 100 * 1000)
+				+ " l/100km";
+		updateData(data, 7);
 	}
 
 	public void updateDistanceToObective(double distanceToObjective) {
-		distancePrevuParRapportAUnObjectifLabel.setText(DISTANCE_TO_OBJECTIVE
-				+ roundAtTwoDecimals(distanceToObjective / 1000.0) + " km");
+		String data = roundAtTwoDecimals(distanceToObjective / 1000.0) + " km";
+		updateData(data, 10);
 	}
 
 	public void updateKilometrageParcourus(double distanceCovered,
 			double tripDistanceCovered, int secondsSinceLaunch) {
-		kilometrageParcourusRAZLabel.setText(KILOMETRAGE_PARCOURUS_RAZ
-				+ roundAtTwoDecimals(tripDistanceCovered / 1000) + " km");
-		kilometrageParcourus0Label.setText(kILOMETRAGE_PARCOURUS0
-				+ roundAtTwoDecimals(distanceCovered / 1000) + " km");
-		graph.vitesse.add(roundAtTwoDecimals(secondsSinceLaunch / 3600.0), roundAtTwoDecimals(distanceCovered / 1000));
+		graph.vitesse.add(roundAtTwoDecimals(secondsSinceLaunch / 3600.0),
+				roundAtTwoDecimals(distanceCovered / 1000));
+
+		String data = roundAtTwoDecimals(tripDistanceCovered / 1000) + " km";
+		updateData(data, 3);
+
+		data = roundAtTwoDecimals(distanceCovered / 1000) + " km";
+		updateData(data, 4);
 	}
 
 	public void updateVitesseInstantannee(double instantaneousSpeed) {
-		vitesseInstantanneeLabel.setText(VITESSE_INSTANTANNEE
-				+ roundAtTwoDecimals(instantaneousSpeed * 3.6) + " km/h");
+		String data = roundAtTwoDecimals(instantaneousSpeed * 3.6) + " km/h";
+		updateData(data, 0);
 	}
 
 	public void updateVitesseMoyenne(double mediumSpeedRAZ,
 			double mediumSpeedFrom0) {
-		vitesseMoyenneRAZLabel.setText(VITESSE_MOYENNE_RAZ
-				+ roundAtTwoDecimals(mediumSpeedRAZ * 3.6) + " km/h");
-		vitesseMoyenne0Label.setText(VITESSE_MOYENNE0
-				+ roundAtTwoDecimals(mediumSpeedFrom0 * 3.6) + " km/h");
+		String data = roundAtTwoDecimals(mediumSpeedRAZ * 3.6) + " km/h";
+		updateData(data, 1);
+
+		data = roundAtTwoDecimals(mediumSpeedFrom0 * 3.6) + " km/h";
+		updateData(data, 2);
 	}
 
-	public void updateVolumeEssenceDisponible(double essenceVolumeDisponible, int secondsSinceLaunch) {
-		volumeDEssenceDisponibleLabel.setText(VOLUME_DISPONIBLE
-				+ roundAtTwoDecimals(essenceVolumeDisponible) + " litre");
-		graph.consommation.add(secondsSinceLaunch  / 3600.0, roundAtTwoDecimals(essenceVolumeDisponible));
+	public void updateVolumeEssenceDisponible(double essenceVolumeDisponible,
+			int secondsSinceLaunch) {
+		String data = roundAtTwoDecimals(essenceVolumeDisponible) + " litre";
+		updateData(data, 8);
+	}
+
+	private void updateData(String data, int row) {
+		carDataModel.setValueAt(data, row, 1);
+		carDataModel.fireTableDataChanged();
 	}
 
 	private double roundAtTwoDecimals(double number) {
@@ -358,24 +323,29 @@ public class Window extends JFrame {
 	public void positionMap(double latitude, double longitude) {
 		graph.map.clear();
 		graph.map.addPoint(latitude, longitude);
-		//sendToServerPosition(latitude, longitude);
+		sendToServerPosition(latitude, longitude);
 	}
-	
+
 	private final int MAX_COUNTER_TRY_CONNECT = 30;
 	private int counterTryConnect = 0;
-	
+	private JTable lapTable;
+	private JTable carDataTable;
+	private JScrollPane timeScrollPane;
+	private JTable timeTable;
+
 	public void tryConnect() {
 		try {
 			socket = new Socket("127.0.0.1", 6464);
-			outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			outputStream = new DataOutputStream(new BufferedOutputStream(
+					socket.getOutputStream()));
 			System.out.println("Connected");
 		} catch (IOException e1) {
 			System.err.println("Can't connect to server!");
 		}
 	}
-	
+
 	public void sendToServerPosition(double latitude, double longitude) {
-		
+
 		if (socket != null) {
 			try {
 				outputStream.writeDouble(latitude);
@@ -388,13 +358,12 @@ public class Window extends JFrame {
 					socket.close();
 				} catch (IOException e1) {
 				}
-				
+
 				outputStream = null;
 				socket = null;
 				counterTryConnect = 0;
 			}
-			
-			
+
 		} else if (counterTryConnect > MAX_COUNTER_TRY_CONNECT) {
 			tryConnect();
 			counterTryConnect = 0;

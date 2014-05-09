@@ -32,9 +32,9 @@ public class Chronometer {
 		isChronometerCount = false;
 	}
 	
-	public synchronized void lap() {
+	public synchronized boolean lap() {
 		if (count == null) {
-			return;
+			return false;
 		}
 		
 		Time newLap;
@@ -48,6 +48,7 @@ public class Chronometer {
 		
 		laps.add(newLap);
 		lastLapTime = count.clone();
+		return true;
 	}
 	
 	public synchronized void stop() {

@@ -177,7 +177,6 @@ public class BordComputer implements Runnable {
 			Update event = mEventUpdateQueue.poll();
 
 			synchronized (this) {
-				// TODO:Voir avec Patrick
 				switch (event) {
 				case AutonomieDisponible:
 					mWindow.updateAutonomieDisponible(mAutonomieDisponible);

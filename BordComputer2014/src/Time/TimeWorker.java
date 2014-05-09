@@ -63,8 +63,8 @@ public class TimeWorker implements Runnable {
 		chronometer.pause();
 	}
 
-	public void lapChronometer() {
-		chronometer.lap();
+	public boolean lapChronometer() {
+		return chronometer.lap();
 	}
 
 	public void stopChronometer() {
