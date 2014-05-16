@@ -237,6 +237,18 @@ public class Window extends JFrame {
 		};
 		imagePanel.setBounds(725, 508, 156, 184);
 		contentPane.add(imagePanel);
+		
+		JPanel carPanel = new JPanel(){
+            @Override
+            public void paint(Graphics g) {
+                try {
+                    g.drawImage(ImageIO.read(new File("car.jpg")), 0, 0, null);
+                } catch (IOException e) {
+                }
+            }
+        };
+		carPanel.setBounds(494, 97, 219, 142);
+		contentPane.add(carPanel);
 
 		tryConnect();
 
