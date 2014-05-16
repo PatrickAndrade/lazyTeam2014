@@ -183,6 +183,7 @@ public class Window extends JFrame {
 		lapTableName.add("Lap");
 		lapModelTable.setColumnIdentifiers(lapTableName);
 		lapTable = new JTable(lapModelTable);
+		lapTable.setEnabled(false);
 		scrollPane.setViewportView(lapTable);
 
 		graphPanel = new JPanel();
@@ -222,6 +223,7 @@ public class Window extends JFrame {
 		timeDataModel = new DefaultTableModel(timeDataInitialisation,
 				timeColumnName);
 		timeTable = new JTable(timeDataModel);
+		timeTable.setEnabled(false);
 		timeScrollPane.setViewportView(timeTable);
 
 		JPanel imagePanel = new JPanel() {
