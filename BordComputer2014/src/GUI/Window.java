@@ -174,6 +174,7 @@ public class Window extends JFrame {
 		contentPane.add(resetButton);
 
 		scrollPane = new JScrollPane();
+		scrollPane.setEnabled(false);
 		scrollPane.setBounds(725, 97, 154, 208);
 		contentPane.add(scrollPane);
 
@@ -214,6 +215,7 @@ public class Window extends JFrame {
 		carDataScrollPane.setViewportView(carDataTable);
 
 		timeScrollPane = new JScrollPane();
+		timeScrollPane.setEnabled(false);
 		timeScrollPane.setBounds(494, 13, 338, 71);
 		contentPane.add(timeScrollPane);
 
