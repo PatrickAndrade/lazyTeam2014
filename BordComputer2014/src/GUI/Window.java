@@ -322,6 +322,8 @@ public class Window extends JFrame {
 
 	public void updateVolumeEssenceDisponible(double essenceVolumeDisponible,
 			int secondsSinceLaunch) {
+		graph.consommation.add(roundAtTwoDecimals(secondsSinceLaunch / 3600.0),
+				roundAtTwoDecimals(essenceVolumeDisponible));
 		String data = roundAtTwoDecimals(essenceVolumeDisponible) + " litre";
 		updateData(data, 8);
 	}
